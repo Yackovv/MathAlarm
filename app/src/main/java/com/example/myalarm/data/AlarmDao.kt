@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.myalarm.domain.enteties.Alarm
 
 @Dao
 interface AlarmDao {
@@ -18,6 +17,6 @@ interface AlarmDao {
     @Query("delete from alarms where id =:alarmId")
     fun removeAlarm(alarmId: Int)
 
-    @Query("select * from alarms where id =:alarmId")
+    @Query("select * from alarms where id =:alarmId limit 1")
     fun getAlarm(alarmId: Int): AlarmDbModel
 }
