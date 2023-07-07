@@ -4,12 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlarmDao {
 
     @Query("select * from alarms")
-    fun getAlarmList(): List<AlarmDbModel>
+    fun getAlarmList(): Flow<List<AlarmDbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAlarm(alarmDbModel: AlarmDbModel)

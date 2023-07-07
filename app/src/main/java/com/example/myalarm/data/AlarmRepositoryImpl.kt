@@ -1,22 +1,31 @@
 package com.example.myalarm.data
 
+import android.app.Application
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.enteties.QuestionSetting
 import com.example.myalarm.domain.repository.AlarmRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 
-class AlarmRepositoryImpl(
-    private val alarmDao: AlarmDao
-) : AlarmRepository {
+class AlarmRepositoryImpl(application: Application) : AlarmRepository {
+
+    private val alarmDao = AppDatabase.getInstance(application).alarmDao()
 
     private val actionExample1 = listOf("+", "-", "*", "/")
     private val actionExample2 = listOf("+", "-")
 
-    override fun getAlarmList(): List<Alarm> {
-        return AlarmMapper.mapListDbModelToListEntity(alarmDao.getAlarmList())
+    override fun getAlarmList(): Flow<List<Alarm>> {
+      return flow {
+            alarmDao.getAlarmList().map {
+                AlarmMapper.mapListDbModelToListEntity(it)
+            }
+        }
     }
+
 
     override fun addAlarm(alarm: Alarm) {
         alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
