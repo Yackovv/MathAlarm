@@ -1,7 +1,13 @@
-package com.example.myalarm.domain.enteties
+package com.example.myalarm.data
 
-data class Alarm(
-    val Id: Int = UNDEFINED_ID,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.myalarm.domain.enteties.Level
+
+@Entity(tableName = "alarms")
+data class AlarmDbModel(
+    @PrimaryKey(autoGenerate = true)
+    val Id: Int = 0,
     val enabled: Boolean,
     val alarmTime: String,
     val level: Level,
@@ -14,8 +20,4 @@ data class Alarm(
     val friday: Boolean = false,
     val saturday: Boolean = false,
     val sunday: Boolean = false
-) {
-    companion object {
-        const val UNDEFINED_ID = 0
-    }
-}
+)

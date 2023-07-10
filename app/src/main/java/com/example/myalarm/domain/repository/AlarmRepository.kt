@@ -4,12 +4,13 @@ import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.enteties.QuestionSetting
+import kotlinx.coroutines.flow.Flow
 
 interface AlarmRepository {
 
     fun generateQuestion(level: Level): Question
 
-    fun getAlarmList(): List<Alarm>
+    fun getAlarmList(): Flow<List<Alarm>>
 
     fun addAlarm(alarm: Alarm)
 

@@ -5,6 +5,9 @@ data class Question(
     val num2: Int,
     val num3: Int,
     val answer: Int,
-    val symbol1: String,
-    val symbol2: String
-)
+    val action1: String,
+    val action2: String
+){
+    val example: String
+        get() = "$num1 $action1 $num2 $action2 $num3 = $answer"
+}
