@@ -8,10 +8,10 @@ import com.example.myalarm.domain.enteties.Level
 data class AlarmDbModel(
     @PrimaryKey(autoGenerate = true)
     val Id: Int = 0,
-    val enabled: Boolean,
-    val alarmTime: String,
-    val level: Level,
-    val countQuestion: Int,
+    val enabled: Boolean = true,
+    val alarmTime: String = "00:00",
+    val level: Level = Level.EASY,
+    val countQuestion: Int = 1,
 
     val monday: Boolean = false,
     val tuesday: Boolean = false,
