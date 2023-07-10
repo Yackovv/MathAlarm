@@ -1,15 +1,13 @@
 package com.example.myalarm.data
 
 import android.app.Application
-import android.util.Log
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.enteties.QuestionSetting
 import com.example.myalarm.domain.repository.AlarmRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 
 class AlarmRepositoryImpl(application: Application) : AlarmRepository {
@@ -20,28 +18,24 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     private val actionExample2 = listOf("+", "-")
 
     override fun getAlarmList(): Flow<List<Alarm>> {
-        return flow {
-            delay(2_000)
-            Log.d("11111", "getAlarmList ")
-            val alarmList = alarmDao.getAlarmList()
-            val alarmEntityList = AlarmMapper.mapListDbModelToListEntity(alarmList)
-            emit(alarmEntityList)
+        return alarmDao.getAlarmList().map {
+            AlarmMapper.mapListDbModelToListEntity(it)
         }
     }
 
-    override fun addAlarm(alarm: Alarm) {
+    override suspend fun addAlarm(alarm: Alarm) {
         alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
     }
 
-    override fun removeAlarm(alarm: Alarm) {
+    override suspend fun removeAlarm(alarm: Alarm) {
         alarmDao.removeAlarm(alarm.Id)
     }
 
-    override fun editAlarm(alarm: Alarm) {
+    override suspend fun editAlarm(alarm: Alarm) {
         alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
     }
 
-    override fun getAlarm(alarmId: Int): Alarm {
+    override suspend fun getAlarm(alarmId: Int): Alarm {
         return AlarmMapper.mapDbModelToEntity(alarmDao.getAlarm(alarmId))
     }
 

@@ -1,12 +1,9 @@
 package com.example.myalarm.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,11 +16,5 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-        lifecycleScope.launch {
-            Log.d("11111", "Check")
-            viewModel.alarmList.collect {
-                Log.d("11111", it.toString())
-            }
-        }
     }
 }
