@@ -18,7 +18,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         lifecycleScope.launch {
+            Log.d("11111", "Check")
             viewModel.alarmList.collect {
                 Log.d("11111", it.toString())
             }

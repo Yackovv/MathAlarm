@@ -1,14 +1,15 @@
 package com.example.myalarm.data
 
 import android.app.Application
+import android.util.Log
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.enteties.QuestionSetting
 import com.example.myalarm.domain.repository.AlarmRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 
 class AlarmRepositoryImpl(application: Application) : AlarmRepository {
@@ -19,13 +20,14 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     private val actionExample2 = listOf("+", "-")
 
     override fun getAlarmList(): Flow<List<Alarm>> {
-      return flow {
-            alarmDao.getAlarmList().map {
-                AlarmMapper.mapListDbModelToListEntity(it)
-            }
+        return flow {
+            delay(2_000)
+            Log.d("11111", "getAlarmList ")
+            val alarmList = alarmDao.getAlarmList()
+            val alarmEntityList = AlarmMapper.mapListDbModelToListEntity(alarmList)
+            emit(alarmEntityList)
         }
     }
-
 
     override fun addAlarm(alarm: Alarm) {
         alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
@@ -44,7 +46,7 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     }
 
     override fun getQuestionSettings(level: Level): QuestionSetting {
-        return when(level){
+        return when (level) {
             Level.EASY -> QuestionSetting(5, 5, 10)
             Level.PRENORMAL -> QuestionSetting(10, 10, 50)
             Level.NORMAL -> QuestionSetting(20, 20, 100)
@@ -55,7 +57,7 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     override fun generateQuestion(level: Level): Question {
         val questionSetting = getQuestionSettings(level)
 
-        while(true) {
+        while (true) {
 
             val num1 = Random.nextInt(1, questionSetting.maxValueNum1)
             val num2 = Random.nextInt(questionSetting.maxValueNum2)
@@ -63,10 +65,10 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
             val action1 = actionExample1.random()
             val action2 = actionExample2.random()
 
-            return if(action1 == "/"){
-                if(divTest(num1, num2)){
+            return if (action1 == "/") {
+                if (divTest(num1, num2)) {
                     val numTemp = doAction(num1, num2, action1)
-                    val answer= doAction(numTemp, num3, action2)
+                    val answer = doAction(numTemp, num3, action2)
 
                     Question(num1, num2, num3, answer, action1, action2)
                 } else {
@@ -74,21 +76,21 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
                 }
             } else {
                 val numTemp = doAction(num1, num2, action1)
-                val answer= doAction(numTemp, num3, action2)
+                val answer = doAction(numTemp, num3, action2)
 
-                Question(num1, num2, num3,answer, action1, action2)
+                Question(num1, num2, num3, answer, action1, action2)
             }
 
         }
     }
 
-    private fun doAction(num1: Int, num2: Int, action1: String): Int{
-      return when(action1){
+    private fun doAction(num1: Int, num2: Int, action1: String): Int {
+        return when (action1) {
             "+" -> num1 + num2
             "-" -> num1 - num2
             "*" -> num1 * num2
             "/" -> num1 / num2
-          else -> throw RuntimeException("Unknown character $action1")
+            else -> throw RuntimeException("Unknown character $action1")
         }
     }
 
