@@ -6,11 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
+import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.usecases.AddAlarmUseCase
 import com.example.myalarm.domain.usecases.EditAlarmUseCase
 import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
-import com.example.myalarm.domain.usecases.GetQuestionSettingUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -21,15 +22,25 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     private val addAlarmUseCase = AddAlarmUseCase(repository)
     private val editAlarmUseCase = EditAlarmUseCase(repository)
     private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-    private val getQuestionSettingUseCase = GetQuestionSettingUseCase(repository)
+
+    //    private val getQuestionSettingUseCase = GetQuestionSettingUseCase(repository)
     private val getAlarmUseCase = GetAlarmUseCase(repository)
 
     private val alarmFlow = MutableStateFlow(Alarm())
+    private val questionFlow = MutableSharedFlow<Question>()
 
-    fun getAlarm(alarmId: Int){
+    fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
             val alarm = getAlarmUseCase.invoke(alarmId)
             alarmFlow.value = alarm
+        }
+    }
+
+    fun generateQuestion(level: Level) {
+        viewModelScope.launch {
+            questionFlow.emit(
+                generateQuestionUseCase.invoke(level)
+            )
         }
     }
 
