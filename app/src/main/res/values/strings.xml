@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">MyAlarm</string>
+    <string name="add_alarm">Добавить будильник</string>
+    <string name="monday">Пн</string>
+    <string name="tuesday">Вт</string>
+    <string name="wednesday">Ср</string>
+    <string name="thursday">Чт</string>
+    <string name="friday">Пт</string>
+    <string name="saturday">Сб</string>
+    <string name="sunday">Вс</string>
 </resources>
