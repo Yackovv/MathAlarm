@@ -1,10 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MyTextView">
+    <style name="DaysOfWeekAlarmItem">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/white_color</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DaysOfWeekAlarmSettings">
+        <item name="android:layout_width">35dp</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white_color</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/circle_day</item>
+    </style>
+
+    <style name="CustomTimePickerStyle" parent="@android:style/Widget.Material.TimePicker">
+        <item name="android:textColorPrimary">@color/white_color</item>
+    </style>
+
+    <style name="EditTextTime">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">59sp</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@color/for_number_color</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:inputType">number</item>
+    </style>
+
+    <style name="StyleAlarmSettings">
+        <item name="android:background">@drawable/shape_alarm_settings</item>
+    </style>
+
+    <style name="LinearLayoutSettingItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">14dp</item>
+    </style>
+
+    <style name="TextViewItemHeader">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/white_color</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:layout_marginStart">15dp</item>
+    </style>
+
+    <style name="TextviewItemDescription">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginStart">15dp</item>
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/blue_color</item>
+    </style>
+
+    <style name="ViewSlimLine">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:background">@color/for_number_color</item>
+    </style>
+
+    <style name="SwitchCompat">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:checked">true</item>
+        <item name="thumbTint">@color/for_number_color</item>
+        <item name="trackTint">@color/switch_color_selector</item>
+    </style>
+
+    <style name="TextViewChooseLevel">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/white_color</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:layout_marginStart">29dp</item>
+        <item name="android:layout_marginTop">19dp</item>
     </style>
 
 </resources>

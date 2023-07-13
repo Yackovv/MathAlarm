@@ -8,4 +8,13 @@
     <string name="friday">Пт</string>
     <string name="saturday">Сб</string>
     <string name="sunday">Вс</string>
+    <string name="level_alarm_settings">Уровень</string>
+    <string name="music">Мелодия</string>
+    <string name="count_of_examples">Количество примеров</string>
+    <string name="cancel">отмена</string>
+    <string name="save">сохранить</string>
+    <string name="level_easy">Легкий</string>
+    <string name="level_normal">Средний</string>
+    <string name="level_hard">Сложный</string>
+    <string name="level_pro">Продвинутый</string>
 </resources>

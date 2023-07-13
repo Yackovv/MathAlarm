@@ -8,6 +8,10 @@ android {
     namespace 'com.example.myalarm'
     compileSdk 33
 
+    buildFeatures{
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId "com.example.myalarm"
         minSdk 24
