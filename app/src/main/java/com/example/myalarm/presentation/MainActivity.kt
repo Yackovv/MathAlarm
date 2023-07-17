@@ -10,6 +10,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
+        val fragment = AlarmListFragment()
+        supportFragmentManager.beginTransaction().replace(
+            R.id.main_container, fragment
+        ).commit()
     }
 }

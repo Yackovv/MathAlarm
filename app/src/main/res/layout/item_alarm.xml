@@ -29,76 +29,88 @@
             tools:text="09:00" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_monday"
-            android:layout_marginStart="39dp"
+            style="@style/DaysOfWeekAlarmItem"
             android:text="@string/monday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_time_item"
+            app:layout_constraintEnd_toStartOf="@+id/tv_tuesday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_time_item"
             app:layout_constraintTop_toTopOf="@+id/tv_time_item" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_tuesday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/tuesday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_monday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_wednesday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_monday"
             app:layout_constraintTop_toTopOf="@+id/tv_monday" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_wednesday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/wednesday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_tuesday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_thursday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_tuesday"
             app:layout_constraintTop_toTopOf="@+id/tv_tuesday" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_thursday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/thursday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_wednesday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_friday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_wednesday"
             app:layout_constraintTop_toTopOf="@+id/tv_wednesday" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_friday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/friday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_thursday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_saturday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_thursday"
             app:layout_constraintTop_toTopOf="@+id/tv_thursday" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_saturday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/saturday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_friday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_sunday"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_friday"
             app:layout_constraintTop_toTopOf="@+id/tv_friday" />
 
         <TextView
-            style="@style/DaysOfWeekAlarmItem"
             android:id="@+id/tv_sunday"
+            style="@style/DaysOfWeekAlarmItem"
             android:layout_marginStart="7dp"
             android:text="@string/sunday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_saturday"
+            app:layout_constraintEnd_toStartOf="@+id/alarm_switch"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_saturday"
             app:layout_constraintTop_toTopOf="@+id/tv_saturday" />
 
         <androidx.appcompat.widget.SwitchCompat
-            style="@style/SwitchCompat"
             android:id="@+id/alarm_switch"
+            style="@style/SwitchCompat"
             android:layout_marginEnd="13dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_time_item"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_time_item"
-            />
+            app:layout_constraintTop_toTopOf="@+id/tv_time_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

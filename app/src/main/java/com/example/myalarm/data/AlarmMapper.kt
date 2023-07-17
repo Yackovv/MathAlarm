@@ -5,6 +5,7 @@ import com.example.myalarm.domain.enteties.Alarm
 object AlarmMapper {
 
     fun mapEntityToDbModel(alarm: Alarm) = AlarmDbModel(
+        id = alarm.id,
         enabled = alarm.enabled,
         alarmTime = alarm.alarmTime,
         level = alarm.level,
@@ -19,6 +20,7 @@ object AlarmMapper {
     )
 
     fun mapDbModelToEntity(alarmDbModel: AlarmDbModel) = Alarm(
+        id = alarmDbModel.id,
         enabled = alarmDbModel.enabled,
         alarmTime = alarmDbModel.alarmTime,
         level = alarmDbModel.level,

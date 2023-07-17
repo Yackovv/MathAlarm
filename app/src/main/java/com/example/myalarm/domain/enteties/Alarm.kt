@@ -1,7 +1,7 @@
 package com.example.myalarm.domain.enteties
 
 data class Alarm(
-    val Id: Int = UNDEFINED_ID,
+    val id: Int = UNDEFINED_ID,
     val enabled: Boolean = true,
     val alarmTime: String = "00:00",
     val level: Level = Level.EASY,

@@ -6,4 +6,5 @@
     <color name="for_number_color">#DEDEDE</color>
     <color name="blue_color">#4496FF</color>
     <color name="red_color">#C85151</color>
+    <color name="transparent">@android:color/transparent</color>
 </resources>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".presentation.AlarmChoiceLevelFragment"
     android:background="@color/background_color">
 
     <ImageView
@@ -18,8 +19,11 @@
         android:contentDescription="@string/cancel" />
 
     <TextView
-        android:id="@+id/et_hours"
-        style="@style/EditTextTime"
+        android:id="@+id/et_example"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="59sp"
+        android:textColor="@color/for_number_color"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -7,7 +7,7 @@ import com.example.myalarm.domain.enteties.Level
 @Entity(tableName = "alarms")
 data class AlarmDbModel(
     @PrimaryKey(autoGenerate = true)
-    val Id: Int = 0,
+    val id: Int = 0,
     val enabled: Boolean = true,
     val alarmTime: String = "00:00",
     val level: Level = Level.EASY,

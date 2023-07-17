@@ -17,6 +17,19 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     private val actionExample1 = listOf("+", "-", "*", "/")
     private val actionExample2 = listOf("+", "-")
 
+//    init{
+//        val scope = CoroutineScope(Dispatchers.IO)
+//        scope.launch {
+//            addAlarm(Alarm(alarmTime = "00:00", monday = true))
+//            addAlarm(Alarm(alarmTime = "01:00", tuesday = true))
+//            addAlarm(Alarm(alarmTime = "02:00", wednesday = true))
+//            addAlarm(Alarm(alarmTime = "03:00", thursday = true))
+//            addAlarm(Alarm(alarmTime = "04:00", friday = true))
+//            addAlarm(Alarm(alarmTime = "05:00", saturday = true))
+//            addAlarm(Alarm(alarmTime = "06:00", sunday = true))
+//        }
+//    }
+
     override fun getAlarmList(): Flow<List<Alarm>> {
         return alarmDao.getAlarmList().map {
             AlarmMapper.mapListDbModelToListEntity(it)
@@ -28,7 +41,7 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     }
 
     override suspend fun removeAlarm(alarm: Alarm) {
-        alarmDao.removeAlarm(alarm.Id)
+        alarmDao.removeAlarm(alarm.id)
     }
 
     override suspend fun editAlarm(alarm: Alarm) {
