@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
 import com.example.myalarm.domain.enteties.Level
+import kotlinx.coroutines.launch
 
 class AlarmChoiceLevelFragment : Fragment() {
 
@@ -14,8 +16,7 @@ class AlarmChoiceLevelFragment : Fragment() {
     private val bind
         get() = _bind ?: throw RuntimeException("FragmentChoiceLevelBinding == null")
 
-    var levelCallback: ((Int, Level) -> Unit)? = null
-
+    private var selectedLevel = Level.EASY
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,10 +31,33 @@ class AlarmChoiceLevelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind.ivSave.setOnClickListener {
-            val a = bind.seekBar.progress
-            levelCallback?.invoke(a, Level.HARD)
+            val countQuestion = bind.seekBar.progress
+            lifecycleScope.launch {
+                AlarmViewModel.level.emit(selectedLevel)
+            }
+            lifecycleScope.launch {
+                AlarmViewModel.countQuestion.emit(countQuestion)
+            }
             requireActivity().supportFragmentManager.popBackStack()
         }
+
+        bind.tvLevelEasy.setOnClickListener{
+            setupLevel(Level.EASY)
+        }
+        bind.tvLevelPrenormal.setOnClickListener{
+            setupLevel(Level.PRENORMAL)
+        }
+        bind.tvLevelNormal.setOnClickListener{
+            setupLevel(Level.NORMAL)
+        }
+        bind.tvLevelHard.setOnClickListener{
+            setupLevel(Level.HARD)
+        }
+
+    }
+
+    private fun setupLevel(level: Level){
+        selectedLevel = level
     }
 
 

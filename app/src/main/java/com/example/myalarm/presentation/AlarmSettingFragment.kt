@@ -9,9 +9,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
+import kotlinx.coroutines.launch
 
 class AlarmSettingFragment : Fragment() {
 
@@ -45,6 +47,19 @@ class AlarmSettingFragment : Fragment() {
 
         setupScreenMode()
         setupClickListeners()
+
+        lifecycleScope.launch {
+            AlarmViewModel.level.collect {
+                bind.tvLevelDescription.text = it.toString()
+                Log.d("11111", "$it")
+            }
+        }
+
+        lifecycleScope.launch {
+            AlarmViewModel.countQuestion.collect {
+                Log.d("11111", "$it")
+            }
+        }
     }
 
     private fun setupScreenMode() {
@@ -104,10 +119,6 @@ class AlarmSettingFragment : Fragment() {
         }
         bind.llLevel.setOnClickListener {
             val fragment = AlarmChoiceLevelFragment.newInstance()
-            fragment.levelCallback = { count, level ->
-                bind.tvLevelDescription.text = level.toString()
-                Log.d("11111", "$count, $level")
-            }
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, fragment)
                 .addToBackStack(null)
