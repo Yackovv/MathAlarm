@@ -26,8 +26,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     //    private val getQuestionSettingUseCase = GetQuestionSettingUseCase(repository)
     private val getAlarmUseCase = GetAlarmUseCase(repository)
 
-    private val alarmFlow = MutableStateFlow(Alarm())
-    private val questionFlow = MutableSharedFlow<Question>()
+    val alarmFlow = MutableStateFlow(Alarm())
+    val questionFlow = MutableSharedFlow<Question>()
 
 
     companion object {
@@ -54,6 +54,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         alarmTime: String,
         level: Level,
         countQuestion: Int,
+        ringtoneUriString: String,
+        vibration: Boolean = true,
         monday: Boolean = false,
         tuesday: Boolean = false,
         wednesday: Boolean = false,
@@ -68,6 +70,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
                     alarmTime = alarmTime,
                     level = level,
                     countQuestion = countQuestion,
+                    ringtoneUriString = ringtoneUriString,
+                    vibration = vibration,
                     monday = monday,
                     tuesday = tuesday,
                     wednesday = wednesday,
@@ -84,6 +88,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
         alarmTime: String,
         level: Level,
         countQuestion: Int,
+        ringtoneUriString: String,
+        vibration: Boolean = true,
         monday: Boolean = false,
         tuesday: Boolean = false,
         wednesday: Boolean = false,
@@ -96,6 +102,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             alarmTime = alarmTime,
             level = level,
             countQuestion = countQuestion,
+            ringtoneUriString = ringtoneUriString,
+            vibration = vibration,
             monday = monday,
             tuesday = tuesday,
             wednesday = wednesday,

@@ -29,52 +29,21 @@
         app:srcCompat="@drawable/add"
         android:contentDescription="@string/save" />
 
-    <ImageView
-        android:id="@+id/iv_frame"
+    <TextView
+        android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/et_hours"
-        app:layout_constraintEnd_toEndOf="@+id/et_minutes"
-        app:layout_constraintHorizontal_bias="0.481"
-        app:layout_constraintStart_toStartOf="@+id/et_hours"
-        app:layout_constraintTop_toTopOf="@+id/et_hours"
-        app:layout_constraintVertical_bias="0.444"
-        app:srcCompat="@drawable/frame" />
-
-    <EditText
-        android:id="@+id/et_hours"
-        style="@style/EditTextTime"
+        android:background="@drawable/time_round"
+        android:textColor="@color/for_number_color"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:textSize="59sp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-        app:layout_constraintEnd_toStartOf="@+id/textView"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_cancel"
-        android:text="08"
-        android:autofillHints="time" />
+        tools:text="00 : 00" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="top"
-        android:text=":"
-        android:textSize="60sp"
-        app:layout_constraintTop_toTopOf="@+id/iv_frame"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_frame"
-        app:layout_constraintEnd_toStartOf="@+id/et_minutes"
-        app:layout_constraintStart_toEndOf="@+id/et_hours" />
-
-    <EditText
-        android:id="@+id/et_minutes"
-        style="@style/EditTextTime"
-        app:layout_constraintBottom_toBottomOf="@+id/et_hours"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/et_hours"
-        android:text="00"
-        android:autofillHints="time" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"

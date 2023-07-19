@@ -1,18 +1,26 @@
 package com.example.myalarm.presentation
 
+import android.app.Activity
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
+import com.example.myalarm.domain.enteties.Level
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
+import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import kotlinx.coroutines.launch
 
 class AlarmSettingFragment : Fragment() {
@@ -22,11 +30,17 @@ class AlarmSettingFragment : Fragment() {
         get() = _bind ?: throw RuntimeException("FragmentAlarmSettingBinding == null")
 
     private var screenMode = SCREEN_MODE_UNKNOWN
-    private var alarmId = Alarm.UNDEFINED_ID
+    private var alarmId = UNDEFINED_ID
 
     private val viewModel by lazy {
         ViewModelProvider(this)[AlarmViewModel::class.java]
     }
+
+    private val backgroundCircle by lazy {
+        ContextCompat.getDrawable(requireContext(), R.drawable.circle_day)
+    }
+
+    private var uri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +61,6 @@ class AlarmSettingFragment : Fragment() {
 
         setupScreenMode()
         setupClickListeners()
-
-        lifecycleScope.launch {
-            AlarmViewModel.level.collect {
-                bind.tvLevelDescription.text = it.toString()
-                Log.d("11111", "$it")
-            }
-        }
-
-        lifecycleScope.launch {
-            AlarmViewModel.countQuestion.collect {
-                Log.d("11111", "$it")
-            }
-        }
     }
 
     private fun setupScreenMode() {
@@ -70,29 +71,103 @@ class AlarmSettingFragment : Fragment() {
     }
 
     private fun launchModeAdd() {
-        //TODO
+        bind.tvTime.text = "00 : 00"
+        bind.tvLevelDescription.text = getString(R.string.level_easy)
+        bind.tvMusicDescription.text = getRingtoneTitle(uri)
+
+        bind.ivSave.setOnClickListener {
+            viewModel.addAlarm(
+                alarmTime = bind.tvTime.text.toString(),
+                level = setupLevelOnAlarm(bind.tvLevelDescription.text.toString()),
+                countQuestion = 2,
+                ringtoneUriString = uri.toString(),
+                vibration = bind.alarmSwitch.isChecked,
+                monday = checkSelectedDay(bind.tvMonday),
+                tuesday = checkSelectedDay(bind.tvTuesday) ,
+                wednesday = checkSelectedDay(bind.tvWednesday) ,
+                thursday = checkSelectedDay(bind.tvThursday) ,
+                friday = checkSelectedDay(bind.tvFriday) ,
+                saturday = checkSelectedDay(bind.tvSaturday) ,
+                sunday = checkSelectedDay(bind.tvSunday)
+            )
+            closeFragment()
+        }
     }
 
     private fun launchModeEdit() {
         viewModel.getAlarm(alarmId)
+        lifecycleScope.launch {
+            viewModel.alarmFlow.collect {
+                bind.tvTime.text = it.alarmTime
+                bind.tvMusicDescription.text = getRingtoneTitle(it.ringtoneUriString.toUri())
+                checkActiveDay(it)
+                setupLevelOnTextView(it)
+                bind.alarmSwitch.isChecked = it.vibration
+            }
+        }
 
+        bind.ivSave.setOnClickListener {
+            viewModel.editAlarm(
+                alarmTime = bind.tvTime.text.toString(),
+                level = setupLevelOnAlarm(bind.tvLevelDescription.text.toString()),
+                countQuestion = 2,
+                ringtoneUriString = uri.toString(),
+                vibration = bind.alarmSwitch.isChecked,
+                monday = checkSelectedDay(bind.tvMonday),
+                tuesday = checkSelectedDay(bind.tvTuesday) ,
+                wednesday = checkSelectedDay(bind.tvWednesday) ,
+                thursday = checkSelectedDay(bind.tvThursday) ,
+                friday = checkSelectedDay(bind.tvFriday) ,
+                saturday = checkSelectedDay(bind.tvSaturday) ,
+                sunday = checkSelectedDay(bind.tvSunday)
+            )
+            closeFragment()
+        }
+    }
+
+    private fun setupLevelOnTextView(alarm: Alarm) {
+        with(bind) {
+            when (alarm.level) {
+                Level.EASY -> tvLevelDescription.text = getString(R.string.level_easy)
+                Level.PRENORMAL -> tvLevelDescription.text = getString(R.string.level_normal)
+                Level.NORMAL -> tvLevelDescription.text = getString(R.string.level_normal)
+                Level.HARD -> tvLevelDescription.text = getString(R.string.level_pro)
+            }
+        }
+    }
+
+    private fun setupLevelOnAlarm(level: String): Level {
+            return when (level) {
+                getString(R.string.level_easy) -> Level.EASY
+                getString(R.string.level_normal) -> Level.PRENORMAL
+                getString(R.string.level_hard) -> Level.NORMAL
+                getString(R.string.level_pro) -> Level.HARD
+                else -> throw RuntimeException("Unknown level $level")
+            }
+    }
+
+    private fun checkSelectedDay(day: TextView): Boolean{
+         return day.background.constantState == backgroundCircle?.constantState
+    }
+
+    private fun checkActiveDay(alarm: Alarm) {
+        if (alarm.monday) bind.tvMonday.background = backgroundCircle
+        if (alarm.tuesday) bind.tvTuesday.background = backgroundCircle
+        if (alarm.wednesday) bind.tvWednesday.background = backgroundCircle
+        if (alarm.thursday) bind.tvThursday.background = backgroundCircle
+        if (alarm.friday) bind.tvFriday.background = backgroundCircle
+        if (alarm.saturday) bind.tvSaturday.background = backgroundCircle
+        if (alarm.sunday) bind.tvSunday.background = backgroundCircle
     }
 
     private fun setActiveDay(day: TextView) {
 
-        val backgroundCircle = ContextCompat.getDrawable(requireContext(), R.drawable.circle_day)
         val backgroundClear = ContextCompat.getDrawable(requireContext(), R.color.transparent)
         if (day.background.constantState == backgroundCircle?.constantState) {
             day.background = backgroundClear
         } else {
             day.background = backgroundCircle
         }
-    }
-
-    private fun createAlarm() {
-        val hours = bind.etHours.text.toString()
-        val minutes = bind.etMinutes.text.toString()
-        // TODO
     }
 
     private fun setupClickListeners() {
@@ -124,6 +199,35 @@ class AlarmSettingFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        bind.llMusic.setOnClickListener {
+            openRingtonePicker()
+        }
+        bind.tvTime.setOnClickListener {
+            setupTime()
+        }
+        bind.ivCancel.setOnClickListener {
+            closeFragment()
+        }
+    }
+
+    private fun closeFragment() {
+        requireActivity().supportFragmentManager.popBackStack()
+    }
+
+    private fun setupTime() {
+        val picker =
+            MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setTimeFormat(CLOCK_24H)
+//                .setTheme(R.style.TimePickerTheme)
+                .setHour(12)
+                .setMinute(10)
+                .build()
+
+        picker.show(requireActivity().supportFragmentManager.beginTransaction(), "Hello")
+        picker.addOnPositiveButtonClickListener {
+            bind.tvTime.text = String.format("%02d : %02d", picker.hour, picker.minute)
+        }
     }
 
     private fun parseArguments() {
@@ -146,8 +250,36 @@ class AlarmSettingFragment : Fragment() {
 
     }
 
+    private fun openRingtonePicker() {
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Выберите мелодию для будильника")
+        startActivityForResult(intent, PICK_RINGTONE_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == PICK_RINGTONE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            uri =
+                data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            bind.tvMusicDescription.text = getRingtoneTitle(uri)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun getRingtoneTitle(uri: Uri?): String {
+        return if(uri != null){
+            val context = requireContext()
+            RingtoneManager.getRingtone(context, uri).getTitle(context)
+        } else {
+            ""
+        }
+    }
+
     companion object {
 
+        private const val PICK_RINGTONE_REQUEST_CODE = 1
+        private const val UNDEFINED_ID = 0
         private const val ALARM_ID = "alarm_id"
         private const val SCREEN_MODE = "screen_mode"
         private const val MODE_ADD = "mode_add"
