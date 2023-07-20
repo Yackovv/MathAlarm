@@ -55,9 +55,9 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
     override fun getQuestionSettings(level: Level): QuestionSetting {
         return when (level) {
             Level.EASY -> QuestionSetting(5, 5, 10)
-            Level.PRENORMAL -> QuestionSetting(10, 10, 50)
-            Level.NORMAL -> QuestionSetting(20, 20, 100)
-            Level.HARD -> QuestionSetting(30, 30, 200)
+            Level.NORMAL -> QuestionSetting(10, 10, 50)
+            Level.HARD -> QuestionSetting(20, 20, 100)
+            Level.PRO -> QuestionSetting(30, 30, 200)
         }
     }
 
@@ -66,8 +66,8 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
 
         while (true) {
 
-            val num1 = Random.nextInt(1, questionSetting.maxValueNum1)
-            val num2 = Random.nextInt(questionSetting.maxValueNum2)
+            val num1 = Random.nextInt(questionSetting.maxValueNum1)
+            val num2 = Random.nextInt(1, questionSetting.maxValueNum2)
             val num3 = Random.nextInt(questionSetting.maxValueNum3)
             val action1 = actionExample1.random()
             val action2 = actionExample2.random()

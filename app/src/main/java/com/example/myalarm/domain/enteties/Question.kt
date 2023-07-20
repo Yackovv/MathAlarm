@@ -8,6 +8,6 @@ data class Question(
     val action1: String,
     val action2: String
 ){
-    val example: String
-        get() = "$num1 $action1 $num2 $action2 $num3 = $answer"
+    val example
+        get() = "$num1 $action1 $num2 $action2 $num3 = ?"
 }

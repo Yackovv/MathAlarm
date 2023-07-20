@@ -27,12 +27,11 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     private val getAlarmUseCase = GetAlarmUseCase(repository)
 
     val alarmFlow = MutableStateFlow(Alarm())
-    val questionFlow = MutableSharedFlow<Question>()
-
+    val questionFlow = MutableSharedFlow<Question>(replay = 1)
 
     companion object {
-        val level = MutableStateFlow(Level.EASY)
-        val countQuestion = MutableStateFlow(1)
+        val levelFlow = MutableStateFlow(Level.EASY)
+        val countQuestionFlow = MutableStateFlow(1)
     }
 
     fun getAlarm(alarmId: Int) {
