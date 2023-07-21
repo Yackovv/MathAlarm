@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_alarm_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.AlarmSettingFragment"
-    android:background="@color/background_color">
+    android:background="@color/background_color"
+    tools:context=".presentation.AlarmSettingFragment">
 
     <ImageView
         android:id="@+id/iv_cancel"
@@ -13,10 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginTop="68dp"
+        android:contentDescription="@string/cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/cancel"
-        android:contentDescription="@string/cancel" />
+        app:srcCompat="@drawable/cancel" />
 
     <ImageView
         android:id="@+id/iv_save"
@@ -24,25 +25,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="68dp"
         android:layout_marginEnd="29dp"
+        android:contentDescription="@string/save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/add"
-        android:contentDescription="@string/save" />
+        app:srcCompat="@drawable/add" />
 
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/time_round"
-        android:textColor="@color/for_number_color"
         android:paddingStart="30dp"
         android:paddingEnd="30dp"
+        android:text="00 : 00"
+        android:textColor="@color/for_number_color"
         android:textSize="59sp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_cancel"
-        android:text="00 : 00" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_cancel" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -201,12 +202,12 @@
             app:layout_constraintTop_toBottomOf="@id/line_3" />
 
         <androidx.appcompat.widget.SwitchCompat
-            style="@style/SwitchCompat"
             android:id="@+id/alarm_switch"
+            style="@style/SwitchCompat"
             android:layout_marginEnd="22dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_vibration"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_vibration"/>
+            app:layout_constraintTop_toTopOf="@+id/tv_vibration" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

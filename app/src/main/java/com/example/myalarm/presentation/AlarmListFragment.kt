@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
 import kotlinx.coroutines.launch
@@ -43,10 +41,8 @@ class AlarmListFragment : Fragment() {
         bind.rvAlarmList.adapter = alarmListAdapter
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.alarmList.collect {
-                    alarmListAdapter.submitList(it)
-                }
+            viewModel.alarmList.collect {
+                alarmListAdapter.submitList(it)
             }
         }
 
@@ -72,5 +68,10 @@ class AlarmListFragment : Fragment() {
                 .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm())
                 .commit()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
     }
 }

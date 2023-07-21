@@ -1,21 +1,20 @@
 package com.example.myalarm.presentation
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
 import com.example.myalarm.domain.enteties.Level
 import kotlinx.coroutines.launch
 
-class AlarmChoiceLevelFragment : Fragment() {
+class AlarmSelectLevelFragment : Fragment() {
 
     private var _bind: FragmentChoiceLevelBinding? = null
     private val bind
@@ -24,6 +23,7 @@ class AlarmChoiceLevelFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(this)[AlarmViewModel::class.java]
     }
+
 
     private var selectedLevel = Level.EASY
     private var countOfQuestion = 1
@@ -54,10 +54,8 @@ class AlarmChoiceLevelFragment : Fragment() {
         setupScreenMode()
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.questionFlow.collect {
-                    bind.tvExample.text = it.example
-                }
+            viewModel.questionFlow.collect {
+                bind.tvExample.text = it.example
             }
         }
     }
@@ -74,36 +72,25 @@ class AlarmChoiceLevelFragment : Fragment() {
         viewModel.generateQuestion(Level.EASY)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                AlarmViewModel.levelFlow.collect {
-                    dropAllColors()
-                    setupLevel(it)
-                    setupColorSelectedLevel(selectedLevel)
-                }
+            AlarmViewModel.levelFlow.collect {
+                dropAllColors()
+                setupLevel(it)
+                setupColorSelectedLevel(selectedLevel)
             }
         }
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                AlarmViewModel.countQuestionFlow.collect {
-                    bind.seekBar.progress = it
-                }
+            AlarmViewModel.countQuestionFlow.collect {
+                bind.seekBar.progress = it
             }
         }
     }
 
     private fun launchModeEdit() {
-        viewModel.getAlarm(alarmId)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.alarmFlow.collect {
-                    bind.seekBar.progress = countOfQuestion
-                    viewModel.generateQuestion(selectedLevel)
-                    dropAllColors()
-                    setupColorSelectedLevel(selectedLevel)
-                }
-            }
-        }
+        bind.seekBar.progress = countOfQuestion
+        viewModel.generateQuestion(selectedLevel)
+        dropAllColors()
+        setupColorSelectedLevel(selectedLevel)
 
     }
 
@@ -123,19 +110,17 @@ class AlarmChoiceLevelFragment : Fragment() {
         bind.ivSave.setOnClickListener {
             val countQuestion = bind.seekBar.progress
             lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    AlarmViewModel.levelFlow.emit(selectedLevel)
-                }
+                AlarmViewModel.levelFlow.emit(selectedLevel)
             }
             lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    AlarmViewModel.countQuestionFlow.emit(countQuestion)
-                }
+                AlarmViewModel.countQuestionFlow.emit(countQuestion)
             }
-            requireActivity().supportFragmentManager.popBackStack()
+            showFragment()
+            closeFragment()
         }
 
         bind.ivCancel.setOnClickListener {
+            showFragment()
             closeFragment()
         }
 
@@ -190,7 +175,6 @@ class AlarmChoiceLevelFragment : Fragment() {
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-
     private fun parseArguments() {
 
         val arguments = requireArguments()
@@ -207,18 +191,32 @@ class AlarmChoiceLevelFragment : Fragment() {
                 throw RuntimeException("Alarm id is absent")
             }
             alarmId = arguments.getInt(ALARM_ID)
-        }
-        if (!arguments.containsKey(SELECTED_LEVEL)) {
-            throw RuntimeException("Selected level is absent")
-        }
-        val tempLevel = arguments.getParcelable<Level>(SELECTED_LEVEL)
-            ?: throw RuntimeException("Unknown level")
-        selectedLevel = tempLevel
 
-        if (!arguments.containsKey(COUNT_OF_QUESTION)) {
-            throw RuntimeException("Count of question is absent")
+            if (!arguments.containsKey(SELECTED_LEVEL)) {
+                throw RuntimeException("Selected level is absent")
+            }
+            val tempLevel = arguments.getParcelable<Level>(SELECTED_LEVEL)
+                ?: throw RuntimeException("Unknown level")
+            selectedLevel = tempLevel
+
+            if (!arguments.containsKey(COUNT_OF_QUESTION)) {
+                throw RuntimeException("Count of question is absent")
+            }
+            countOfQuestion = arguments.getInt(COUNT_OF_QUESTION)
         }
-        countOfQuestion = arguments.getInt(COUNT_OF_QUESTION)
+    }
+
+    private fun showFragment(){
+        val temp = requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_alarm_setting)
+        Log.d("11111", "${temp == null}")
+        if(temp != null) {
+            parentFragmentManager.beginTransaction().show(temp).commit()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
     }
 
     companion object {
@@ -232,10 +230,9 @@ class AlarmChoiceLevelFragment : Fragment() {
         private const val SELECTED_LEVEL = "selected_level"
         private const val COUNT_OF_QUESTION = "count_of_question"
 
-        fun newInstanceAdd(alarmId: Int): AlarmChoiceLevelFragment {
-            return AlarmChoiceLevelFragment().apply {
+        fun newInstanceAdd(): AlarmSelectLevelFragment {
+            return AlarmSelectLevelFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ALARM_ID, alarmId)
                     putString(SCREEN_MODE, MODE_ADD)
                 }
             }
@@ -245,8 +242,8 @@ class AlarmChoiceLevelFragment : Fragment() {
             alarmId: Int,
             level: Level,
             countOfQuestion: Int
-        ): AlarmChoiceLevelFragment {
-            return AlarmChoiceLevelFragment().apply {
+        ): AlarmSelectLevelFragment {
+            return AlarmSelectLevelFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ALARM_ID, alarmId)
                     putString(SCREEN_MODE, MODE_EDIT)

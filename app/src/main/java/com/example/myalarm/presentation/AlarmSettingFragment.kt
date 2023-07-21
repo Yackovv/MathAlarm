@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
@@ -47,6 +46,15 @@ class AlarmSettingFragment : Fragment() {
 
     private var countOfQuestion by Delegates.notNull<Int>()
 
+    private fun log(tag: String) {
+        Log.d("AlarmSettingFragment", tag)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        parentFragmentManager.beginTransaction().show(this).commit()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseArguments()
@@ -57,6 +65,7 @@ class AlarmSettingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        log("onCreateView")
         _bind = FragmentAlarmSettingBinding.inflate(inflater, container, false)
         return bind.root
     }
@@ -67,18 +76,17 @@ class AlarmSettingFragment : Fragment() {
         setupScreenMode()
         setupClickListeners()
 
+//        val temp = childFragmentManager.findFragmentById(R.id.fragment_alarm_setting)
+//        Log.d("11111", "${ temp == null }")
+
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                AlarmViewModel.countQuestionFlow.collect {
-                    countOfQuestion = it
-                }
+            AlarmViewModel.countQuestionFlow.collect {
+                countOfQuestion = it
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                AlarmViewModel.levelFlow.collect {
-                    setupLevelOnTextView(it)
-                }
+            AlarmViewModel.levelFlow.collect {
+                setupLevelOnTextView(it)
             }
         }
     }
@@ -109,30 +117,32 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
-            closeFragment()
         }
 
         bind.llLevel.setOnClickListener {
-            val fragment = AlarmChoiceLevelFragment.newInstanceAdd(alarmId)
+            val fragment = AlarmSelectLevelFragment.newInstanceAdd()
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.main_container, fragment)
                 .addToBackStack(null)
                 .commit()
+
+            hideFragment()
         }
     }
 
     private fun launchModeEdit() {
         viewModel.getAlarm(alarmId)
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.alarmFlow.collect {
-                    bind.tvTime.text = it.alarmTime
-                    uri = it.ringtoneUriString.toUri()
-                    bind.tvMusicDescription.text = getRingtoneTitle(uri)
-                    checkActiveDay(it)
-                    setupLevelOnTextView(it.level)
-                    bind.alarmSwitch.isChecked = it.vibration
-                }
+            viewModel.alarmFlow.collect {
+
+                log("collect modeEdit")
+
+                bind.tvTime.text = it.alarmTime
+                uri = it.ringtoneUriString.toUri()
+                bind.tvMusicDescription.text = getRingtoneTitle(uri)
+                checkActiveDay(it)
+                setupLevelOnTextView(it.level)
+                bind.alarmSwitch.isChecked = it.vibration
             }
         }
 
@@ -151,17 +161,18 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
-            closeFragment()
         }
 
         bind.llLevel.setOnClickListener {
             val levelFromTvLevel = setupLevelOnAlarm(bind.tvLevelDescription.text.toString())
             val fragment =
-                AlarmChoiceLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
+                AlarmSelectLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.main_container, fragment)
                 .addToBackStack(null)
                 .commit()
+
+            hideFragment()
         }
     }
 
@@ -240,12 +251,8 @@ class AlarmSettingFragment : Fragment() {
             setupTime()
         }
         bind.ivCancel.setOnClickListener {
-            closeFragment()
+            requireActivity().supportFragmentManager.popBackStack()
         }
-    }
-
-    private fun closeFragment() {
-        requireActivity().supportFragmentManager.popBackStack()
     }
 
     private fun setupTime() {
@@ -261,6 +268,10 @@ class AlarmSettingFragment : Fragment() {
         picker.addOnPositiveButtonClickListener {
             bind.tvTime.text = String.format("%02d : %02d", picker.hour, picker.minute)
         }
+    }
+
+    private fun hideFragment() {
+        parentFragmentManager.beginTransaction().hide(this).commit()
     }
 
     private fun parseArguments() {
@@ -297,16 +308,22 @@ class AlarmSettingFragment : Fragment() {
             bind.tvMusicDescription.text = getRingtoneTitle(uri)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
+            uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         }
     }
 
     private fun getRingtoneTitle(uri: Uri?): String {
+        val context = requireContext()
         return if (uri != null) {
-            val context = requireContext()
             RingtoneManager.getRingtone(context, uri).getTitle(context)
         } else {
-            ""
+            RingtoneManager.getRingtone(context, this.uri).getTitle(context)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
     }
 
     companion object {
