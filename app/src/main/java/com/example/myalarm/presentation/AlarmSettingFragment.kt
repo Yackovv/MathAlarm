@@ -5,7 +5,6 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -156,9 +155,11 @@ class AlarmSettingFragment : Fragment() {
         }
 
         bind.llLevel.setOnClickListener {
-            val fragment = AlarmChoiceLevelFragment.newInstanceEdit(alarmId)
+            val levelFromTvLevel = setupLevelOnAlarm(bind.tvLevelDescription.text.toString())
+            val fragment =
+                AlarmChoiceLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, fragment)
+                .add(R.id.main_container, fragment)
                 .addToBackStack(null)
                 .commit()
         }
@@ -170,19 +171,19 @@ class AlarmSettingFragment : Fragment() {
             when (level) {
                 Level.EASY -> tvLevelDescription.text = getString(R.string.level_easy)
                 Level.NORMAL -> tvLevelDescription.text = getString(R.string.level_normal)
-                Level.HARD -> tvLevelDescription.text = getString(R.string.level_normal)
+                Level.HARD -> tvLevelDescription.text = getString(R.string.level_hard)
                 Level.PRO -> tvLevelDescription.text = getString(R.string.level_pro)
             }
         }
     }
 
-    private fun setupLevelOnAlarm(level: String): Level {
-        return when (level) {
+    private fun setupLevelOnAlarm(levelString: String): Level {
+        return when (levelString) {
             getString(R.string.level_easy) -> Level.EASY
             getString(R.string.level_normal) -> Level.NORMAL
             getString(R.string.level_hard) -> Level.HARD
             getString(R.string.level_pro) -> Level.PRO
-            else -> throw RuntimeException("Unknown level $level")
+            else -> throw RuntimeException("Unknown level $levelString")
         }
     }
 
@@ -306,16 +307,6 @@ class AlarmSettingFragment : Fragment() {
         } else {
             ""
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("11111", "onDestroyView")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("11111", "onDestroy")
     }
 
     companion object {

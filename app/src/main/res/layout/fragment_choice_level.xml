@@ -117,27 +117,27 @@
             app:layout_constraintTop_toBottomOf="@id/line_1" />
 
         <TextView
-            android:id="@+id/tv_level_prenormal"
+            android:id="@+id/tv_level_normal"
             style="@style/TextViewChooseLevel"
             android:text="@string/level_normal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_level_easy" />
 
         <TextView
-            android:id="@+id/tv_level_normal"
+            android:id="@+id/tv_level_hard"
             style="@style/TextViewChooseLevel"
             android:text="@string/level_hard"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_level_prenormal" />
+            app:layout_constraintTop_toBottomOf="@id/tv_level_normal" />
 
         <TextView
-            android:id="@+id/tv_level_hard"
+            android:id="@+id/tv_level_pro"
             style="@style/TextViewChooseLevel"
             android:text="@string/level_pro"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="19dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_level_normal" />
+            app:layout_constraintTop_toBottomOf="@id/tv_level_hard" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
