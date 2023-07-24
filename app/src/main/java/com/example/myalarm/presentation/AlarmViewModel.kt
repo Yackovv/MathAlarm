@@ -4,115 +4,50 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myalarm.data.AlarmRepositoryImpl
-import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.usecases.AddAlarmUseCase
-import com.example.myalarm.domain.usecases.EditAlarmUseCase
 import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class AlarmViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = AlarmRepositoryImpl(application)
 
-    private val addAlarmUseCase = AddAlarmUseCase(repository)
-    private val editAlarmUseCase = EditAlarmUseCase(repository)
     private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-
-    //    private val getQuestionSettingUseCase = GetQuestionSettingUseCase(repository)
     private val getAlarmUseCase = GetAlarmUseCase(repository)
 
-    val alarmFlow = MutableStateFlow(Alarm())
+    private var level = Level.EASY
+    private var rightAnswer: Int = 0
+    private var numberQuestion = 1
     val questionFlow = MutableSharedFlow<Question>(replay = 1)
-
-    companion object {
-        val levelFlow = MutableStateFlow(Level.EASY)
-        val countQuestionFlow = MutableStateFlow(1)
-    }
+    val isRightAnswer = MutableSharedFlow<Boolean>(replay = 1)
+    val countOfQuestion = MutableSharedFlow<Int>(replay = 1)
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
             val alarm = getAlarmUseCase.invoke(alarmId)
-            alarmFlow.value = alarm
+            level = alarm.level
+            numberQuestion = alarm.countQuestion
+            countOfQuestion.emit(numberQuestion)
         }
     }
 
-    fun generateQuestion(level: Level) {
+    fun generateQuestion() {
         viewModelScope.launch {
-            questionFlow.emit(
-                generateQuestionUseCase.invoke(level)
-            )
+            val question = generateQuestionUseCase.invoke(level)
+            rightAnswer = question.answer
+            questionFlow.emit(question)
+            countOfQuestion.emit(--numberQuestion)
         }
     }
 
-    fun addAlarm(
-        alarmTime: String,
-        level: Level,
-        countQuestion: Int,
-        ringtoneUriString: String,
-        vibration: Boolean = true,
-        monday: Boolean = false,
-        tuesday: Boolean = false,
-        wednesday: Boolean = false,
-        thursday: Boolean = false,
-        friday: Boolean = false,
-        saturday: Boolean = false,
-        sunday: Boolean = false
-    ) {
+    fun checkAnswer(userAnswer: String){
         viewModelScope.launch {
-            addAlarmUseCase.invoke(
-                Alarm(
-                    alarmTime = alarmTime,
-                    level = level,
-                    countQuestion = countQuestion,
-                    ringtoneUriString = ringtoneUriString,
-                    vibration = vibration,
-                    monday = monday,
-                    tuesday = tuesday,
-                    wednesday = wednesday,
-                    thursday = thursday,
-                    friday = friday,
-                    saturday = saturday,
-                    sunday = sunday
-                )
-            )
+            val answer = userAnswer.trim().toInt()
+            isRightAnswer.emit(answer == rightAnswer)
         }
     }
 
-    fun editAlarm(
-        alarmTime: String,
-        level: Level,
-        countQuestion: Int,
-        ringtoneUriString: String,
-        vibration: Boolean = true,
-        monday: Boolean = false,
-        tuesday: Boolean = false,
-        wednesday: Boolean = false,
-        thursday: Boolean = false,
-        friday: Boolean = false,
-        saturday: Boolean = false,
-        sunday: Boolean = false
-    ) {
-        val changedAlarm = alarmFlow.value.copy(
-            alarmTime = alarmTime,
-            level = level,
-            countQuestion = countQuestion,
-            ringtoneUriString = ringtoneUriString,
-            vibration = vibration,
-            monday = monday,
-            tuesday = tuesday,
-            wednesday = wednesday,
-            thursday = thursday,
-            friday = friday,
-            saturday = saturday,
-            sunday = sunday
-        )
-        viewModelScope.launch {
-            editAlarmUseCase.invoke(changedAlarm)
-        }
-    }
 }

@@ -35,7 +35,7 @@ class AlarmSettingFragment : Fragment() {
     private var alarmId = UNDEFINED_ID
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmViewModel::class.java]
+        ViewModelProvider(this)[AlarmSettingViewModel::class.java]
     }
 
     private val backgroundCircle by lazy {
@@ -48,11 +48,6 @@ class AlarmSettingFragment : Fragment() {
 
     private fun log(tag: String) {
         Log.d("AlarmSettingFragment", tag)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        parentFragmentManager.beginTransaction().show(this).commit()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,16 +71,14 @@ class AlarmSettingFragment : Fragment() {
         setupScreenMode()
         setupClickListeners()
 
-//        val temp = childFragmentManager.findFragmentById(R.id.fragment_alarm_setting)
-//        Log.d("11111", "${ temp == null }")
 
         lifecycleScope.launch {
-            AlarmViewModel.countQuestionFlow.collect {
+            AlarmSettingViewModel.countQuestionFlow.collect {
                 countOfQuestion = it
             }
         }
         lifecycleScope.launch {
-            AlarmViewModel.levelFlow.collect {
+            AlarmSettingViewModel.levelFlow.collect {
                 setupLevelOnTextView(it)
             }
         }
@@ -117,12 +110,14 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
+            parentFragmentManager.popBackStack()
         }
 
         bind.llLevel.setOnClickListener {
             val fragment = AlarmSelectLevelFragment.newInstanceAdd()
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.main_container, fragment)
+                .setReorderingAllowed(true)
                 .addToBackStack(null)
                 .commit()
 
@@ -161,6 +156,7 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
+            parentFragmentManager.popBackStack()
         }
 
         bind.llLevel.setOnClickListener {
@@ -169,7 +165,8 @@ class AlarmSettingFragment : Fragment() {
                 AlarmSelectLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
             requireActivity().supportFragmentManager.beginTransaction()
                 .add(R.id.main_container, fragment)
-                .addToBackStack(null)
+                .setReorderingAllowed(true)
+                .addToBackStack("setting")
                 .commit()
 
             hideFragment()
@@ -251,17 +248,20 @@ class AlarmSettingFragment : Fragment() {
             setupTime()
         }
         bind.ivCancel.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            parentFragmentManager.popBackStack()
         }
     }
 
     private fun setupTime() {
+        val str = bind.tvTime.text.toString()
+        val hours = str.substringBefore(" ").toInt()
+        val minutes = str.substringAfterLast(" ").toInt()
         val picker =
             MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setTimeFormat(CLOCK_24H)
-                .setHour(12)
-                .setMinute(10)
+                .setHour(hours)
+                .setMinute(minutes)
                 .build()
 
         picker.show(requireActivity().supportFragmentManager.beginTransaction(), "Hello")
@@ -272,6 +272,8 @@ class AlarmSettingFragment : Fragment() {
 
     private fun hideFragment() {
         parentFragmentManager.beginTransaction().hide(this).commit()
+        val fragment = requireActivity() as MainActivity
+        fragment.fragment = this
     }
 
     private fun parseArguments() {

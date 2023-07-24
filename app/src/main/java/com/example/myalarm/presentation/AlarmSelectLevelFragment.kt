@@ -1,10 +1,10 @@
 package com.example.myalarm.presentation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,7 +21,7 @@ class AlarmSelectLevelFragment : Fragment() {
         get() = _bind ?: throw RuntimeException("FragmentChoiceLevelBinding == null")
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmViewModel::class.java]
+        ViewModelProvider(this)[AlarmSettingViewModel::class.java]
     }
 
 
@@ -58,6 +58,15 @@ class AlarmSelectLevelFragment : Fragment() {
                 bind.tvExample.text = it.example
             }
         }
+
+        val onBackPressed = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showFragmentAlarmSetting()
+                parentFragmentManager.popBackStack()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(onBackPressed)
     }
 
     private fun setupScreenMode() {
@@ -67,12 +76,13 @@ class AlarmSelectLevelFragment : Fragment() {
         }
     }
 
+
     private fun launchModeAdd() {
         bind.tvLevelEasy.setTextColor(colorBlue)
         viewModel.generateQuestion(Level.EASY)
 
         lifecycleScope.launch {
-            AlarmViewModel.levelFlow.collect {
+            AlarmSettingViewModel.levelFlow.collect {
                 dropAllColors()
                 setupLevel(it)
                 setupColorSelectedLevel(selectedLevel)
@@ -80,7 +90,7 @@ class AlarmSelectLevelFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            AlarmViewModel.countQuestionFlow.collect {
+            AlarmSettingViewModel.countQuestionFlow.collect {
                 bind.seekBar.progress = it
             }
         }
@@ -110,17 +120,15 @@ class AlarmSelectLevelFragment : Fragment() {
         bind.ivSave.setOnClickListener {
             val countQuestion = bind.seekBar.progress
             lifecycleScope.launch {
-                AlarmViewModel.levelFlow.emit(selectedLevel)
+                AlarmSettingViewModel.levelFlow.emit(selectedLevel)
             }
             lifecycleScope.launch {
-                AlarmViewModel.countQuestionFlow.emit(countQuestion)
+                AlarmSettingViewModel.countQuestionFlow.emit(countQuestion)
             }
-            showFragment()
             closeFragment()
         }
 
         bind.ivCancel.setOnClickListener {
-            showFragment()
             closeFragment()
         }
 
@@ -172,7 +180,13 @@ class AlarmSelectLevelFragment : Fragment() {
     }
 
     private fun closeFragment() {
-        requireActivity().supportFragmentManager.popBackStack()
+        showFragmentAlarmSetting()
+        parentFragmentManager.popBackStack()
+    }
+
+    private fun showFragmentAlarmSetting() {
+        val activity = requireActivity() as MainActivity
+        parentFragmentManager.beginTransaction().show(activity.fragment).commit()
     }
 
     private fun parseArguments() {
@@ -206,13 +220,6 @@ class AlarmSelectLevelFragment : Fragment() {
         }
     }
 
-    private fun showFragment(){
-        val temp = requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_alarm_setting)
-        Log.d("11111", "${temp == null}")
-        if(temp != null) {
-            parentFragmentManager.beginTransaction().show(temp).commit()
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

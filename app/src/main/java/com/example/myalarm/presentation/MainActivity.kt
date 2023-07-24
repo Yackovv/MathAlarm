@@ -6,6 +6,8 @@ import com.example.myalarm.R
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var fragment: AlarmSettingFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -13,6 +15,8 @@ class MainActivity : AppCompatActivity() {
         val fragment = AlarmListFragment()
         supportFragmentManager.beginTransaction().replace(
             R.id.main_container, fragment
-        ).commit()
+        ).setReorderingAllowed(true)
+            .commit()
+
     }
 }
