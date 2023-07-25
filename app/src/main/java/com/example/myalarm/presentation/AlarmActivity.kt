@@ -2,7 +2,10 @@ package com.example.myalarm.presentation
 
 import android.content.Context
 import android.content.Intent
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -32,12 +35,34 @@ class AlarmActivity : AppCompatActivity() {
 
     private var alarmId = 0
 
+    private lateinit var ringtone: Ringtone
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(bind.root)
 
         parseIntent()
         viewModel.getAlarm(alarmId)
+        viewModel.generateQuestion()
+
+        lifecycleScope.launch {
+            viewModel.timerFlow.collect {
+                bind.tvTimer.text = it
+                if (it == "0") {
+                    ringtone.play()
+                    bind.ivSound.isVisible = true
+                    bind.ivNoSound.visibility = View.GONE
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.ringtoneUriFlow.collect {
+                ringtone = RingtoneManager.getRingtone(this@AlarmActivity, it)
+                ringtone.play()
+            }
+        }
 
         lifecycleScope.launch {
             viewModel.questionFlow.collect {
@@ -46,7 +71,7 @@ class AlarmActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            viewModel.isRightAnswer.collect {
+            viewModel.isRightAnswerFlow.collect {
                 with(bind) {
                     if (it) {
                         viewModel.generateQuestion()
@@ -64,7 +89,7 @@ class AlarmActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            viewModel.countOfQuestion.collect {
+            viewModel.countOfQuestionFlow.collect {
                 if (it == 0) {
                     finish()
                 }
@@ -75,7 +100,12 @@ class AlarmActivity : AppCompatActivity() {
             viewModel.checkAnswer(bind.etAnswer.text.toString())
         }
 
-
+        bind.ivSpeaker.setOnClickListener {
+            ringtone.stop()
+            viewModel.startTimer()
+            bind.ivSound.visibility = View.GONE
+            bind.ivNoSound.isVisible = true
+        }
     }
 
     private fun parseIntent() {
@@ -86,6 +116,11 @@ class AlarmActivity : AppCompatActivity() {
         }
         alarmId = args.getIntExtra(EXTRA_ALARM_ID, UNDEFINED_ID)
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ringtone.stop()
     }
 
     companion object {

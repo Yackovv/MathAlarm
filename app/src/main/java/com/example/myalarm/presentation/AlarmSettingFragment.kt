@@ -304,12 +304,12 @@ class AlarmSettingFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_RINGTONE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             uri =
                 data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             bind.tvMusicDescription.text = getRingtoneTitle(uri)
         } else {
-            super.onActivityResult(requestCode, resultCode, data)
             uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         }
     }
