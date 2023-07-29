@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -33,14 +34,22 @@ class AlarmActivity : AppCompatActivity() {
         ContextCompat.getColor(this, R.color.setting_background_color)
     }
 
-    private var alarmId = 0
+    private var alarmId = UNDEFINED_ID
+
+    private var notificationId = UNDEFINED_ID
 
     private lateinit var ringtone: Ringtone
+
+    private fun log(str: String){
+        Log.d("11111", str)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(bind.root)
+
+        log("onCreate")
 
         parseIntent()
         viewModel.getAlarm(alarmId)
@@ -91,6 +100,7 @@ class AlarmActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.countOfQuestionFlow.collect {
                 if (it == 0) {
+                    ringtone.stop()
                     finish()
                 }
             }
@@ -110,27 +120,29 @@ class AlarmActivity : AppCompatActivity() {
 
     private fun parseIntent() {
 
-        val args = intent
-        if (!args.hasExtra(EXTRA_ALARM_ID)) {
+        val intent = intent
+        if (!intent.hasExtra(EXTRA_ALARM_ID)) {
             throw RuntimeException("Alarm ID is absent")
         }
-        alarmId = args.getIntExtra(EXTRA_ALARM_ID, UNDEFINED_ID)
 
-    }
+        if (!intent.hasExtra(EXTRA_NOTIFICATION_ID)){
+            throw RuntimeException("Notification ID is absent")
+        }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        ringtone.stop()
+        alarmId = intent.getIntExtra(EXTRA_ALARM_ID, UNDEFINED_ID)
+        notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, UNDEFINED_ID)
     }
 
     companion object {
 
         private const val EXTRA_ALARM_ID = "alarm_id"
         private const val UNDEFINED_ID = 0
+        private const val EXTRA_NOTIFICATION_ID = "notification_id"
 
-        fun newIntentAlarmActivity(context: Context, alarmId: Int): Intent {
+        fun newIntentAlarmActivity(context: Context, alarmId: Int, notificationId: Int): Intent {
             return Intent(context, AlarmActivity::class.java).apply {
                 putExtra(EXTRA_ALARM_ID, alarmId)
+                putExtra(EXTRA_NOTIFICATION_ID, notificationId)
             }
         }
     }

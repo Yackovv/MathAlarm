@@ -1,6 +1,9 @@
 package com.example.myalarm.presentation
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
@@ -23,6 +26,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import kotlin.properties.Delegates
 
 class AlarmSettingFragment : Fragment() {
@@ -47,7 +51,7 @@ class AlarmSettingFragment : Fragment() {
     private var countOfQuestion by Delegates.notNull<Int>()
 
     private fun log(tag: String) {
-        Log.d("AlarmSettingFragment", tag)
+        Log.d("11111", tag)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,6 +114,7 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
+            setupAlarm()
             parentFragmentManager.popBackStack()
         }
 
@@ -156,6 +161,7 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
+            setupAlarm()
             parentFragmentManager.popBackStack()
         }
 
@@ -173,6 +179,31 @@ class AlarmSettingFragment : Fragment() {
         }
     }
 
+
+    private fun setupAlarm(){
+        val context = requireContext()
+
+        val alarmManager =
+            requireActivity().getSystemService(AlarmManager::class.java) as AlarmManager
+
+        val calendar = Calendar.getInstance()
+        val str = bind.tvTime.text.toString()
+        val hours = str.substringBefore(" ").toInt()
+        val minutes = str.substringAfterLast(" ").toInt()
+
+        log("$hours : $minutes")
+        calendar.set(Calendar.HOUR_OF_DAY, hours)
+        calendar.set(Calendar.MINUTE, minutes)
+
+        val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            PENDING_INTENT_RC,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+    }
 
     private fun setupLevelOnTextView(level: Level) {
         with(bind) {
@@ -264,7 +295,7 @@ class AlarmSettingFragment : Fragment() {
                 .setMinute(minutes)
                 .build()
 
-        picker.show(requireActivity().supportFragmentManager.beginTransaction(), "Hello")
+        picker.show(parentFragmentManager.beginTransaction(), "Hello")
         picker.addOnPositiveButtonClickListener {
             bind.tvTime.text = String.format("%02d : %02d", picker.hour, picker.minute)
         }
@@ -300,12 +331,12 @@ class AlarmSettingFragment : Fragment() {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Выберите мелодию для будильника")
-        startActivityForResult(intent, PICK_RINGTONE_REQUEST_CODE)
+        startActivityForResult(intent, PICK_RINGTONE_RC)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_RINGTONE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_RINGTONE_RC && resultCode == Activity.RESULT_OK) {
             uri =
                 data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             bind.tvMusicDescription.text = getRingtoneTitle(uri)
@@ -330,7 +361,8 @@ class AlarmSettingFragment : Fragment() {
 
     companion object {
 
-        private const val PICK_RINGTONE_REQUEST_CODE = 1
+        private const val PICK_RINGTONE_RC = 1
+        private const val PENDING_INTENT_RC = 111
         private const val UNDEFINED_ID = 0
         private const val ALARM_ID = "alarm_id"
         private const val SCREEN_MODE = "screen_mode"

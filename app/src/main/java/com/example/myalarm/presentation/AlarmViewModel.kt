@@ -24,7 +24,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
 
     private var level = Level.EASY
     private var rightAnswer: Int = 0
-    private var numberQuestion = 1
+    private var numberQuestion = 10
 
     private val timer by lazy {
         object : CountDownTimer(15_000, 1_000) {
@@ -51,6 +51,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
+            Log.d("11111", "Alarm ID: $alarmId")
             val alarm = getAlarmUseCase.invoke(alarmId)
             level = alarm.level
             numberQuestion = alarm.countQuestion - 1
