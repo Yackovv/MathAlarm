@@ -12,7 +12,7 @@ interface AlarmRepository {
 
     fun getAlarmList(): Flow<List<Alarm>>
 
-    suspend fun addAlarm(alarm: Alarm)
+    suspend fun addAlarm(alarm: Alarm): Long
 
     suspend fun removeAlarm(alarm: Alarm)
 

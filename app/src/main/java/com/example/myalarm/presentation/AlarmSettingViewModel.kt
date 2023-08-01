@@ -1,6 +1,7 @@
 package com.example.myalarm.presentation
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myalarm.data.AlarmRepositoryImpl
@@ -26,6 +27,7 @@ class AlarmSettingViewModel(application: Application) : AndroidViewModel(applica
 
     val alarmFlow = MutableStateFlow(Alarm())
     val questionFlow = MutableSharedFlow<Question>(replay = 1)
+    val alarmIdFlow = MutableSharedFlow<Int>(replay = 1)
 
     companion object {
         val levelFlow = MutableStateFlow(Level.EASY)
@@ -62,7 +64,7 @@ class AlarmSettingViewModel(application: Application) : AndroidViewModel(applica
         sunday: Boolean = false
     ) {
         viewModelScope.launch {
-            addAlarmUseCase.invoke(
+             val id = addAlarmUseCase.invoke(
                 Alarm(
                     alarmTime = alarmTime,
                     level = level,
@@ -78,6 +80,7 @@ class AlarmSettingViewModel(application: Application) : AndroidViewModel(applica
                     sunday = sunday
                 )
             )
+            alarmIdFlow.emit(id.toInt())
         }
     }
 

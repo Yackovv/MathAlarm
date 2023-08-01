@@ -1,5 +1,6 @@
 package com.example.myalarm.presentation
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.media.Ringtone
@@ -54,6 +55,7 @@ class AlarmActivity : AppCompatActivity() {
         parseIntent()
         viewModel.getAlarm(alarmId)
         viewModel.generateQuestion()
+        cancelNotification()
 
         lifecycleScope.launch {
             viewModel.timerFlow.collect {
@@ -116,6 +118,12 @@ class AlarmActivity : AppCompatActivity() {
             bind.ivSound.visibility = View.GONE
             bind.ivNoSound.isVisible = true
         }
+    }
+
+    private fun cancelNotification(){
+        val notificationManager =
+            getSystemService(NotificationManager::class.java) as NotificationManager
+        notificationManager.cancel(notificationId)
     }
 
     private fun parseIntent() {

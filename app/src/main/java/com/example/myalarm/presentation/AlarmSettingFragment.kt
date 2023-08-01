@@ -1,6 +1,5 @@
 package com.example.myalarm.presentation
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -13,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -99,6 +99,7 @@ class AlarmSettingFragment : Fragment() {
         bind.tvLevelDescription.text = getString(R.string.level_easy)
         bind.tvMusicDescription.text = getRingtoneTitle(uri)
 
+
         bind.ivSave.setOnClickListener {
             viewModel.addAlarm(
                 alarmTime = bind.tvTime.text.toString(),
@@ -114,8 +115,15 @@ class AlarmSettingFragment : Fragment() {
                 saturday = checkSelectedDay(bind.tvSaturday),
                 sunday = checkSelectedDay(bind.tvSunday)
             )
-            setupAlarm()
-            parentFragmentManager.popBackStack()
+
+            lifecycleScope.launch {
+                viewModel.alarmIdFlow.collect{
+                    alarmId = it
+                    Log.d("11111", "collect: $it, alarmId = $alarmId")
+                    setupAlarm()
+                    parentFragmentManager.popBackStack()
+                }
+            }
         }
 
         bind.llLevel.setOnClickListener {
@@ -186,15 +194,6 @@ class AlarmSettingFragment : Fragment() {
         val alarmManager =
             requireActivity().getSystemService(AlarmManager::class.java) as AlarmManager
 
-        val calendar = Calendar.getInstance()
-        val str = bind.tvTime.text.toString()
-        val hours = str.substringBefore(" ").toInt()
-        val minutes = str.substringAfterLast(" ").toInt()
-
-        log("$hours : $minutes")
-        calendar.set(Calendar.HOUR_OF_DAY, hours)
-        calendar.set(Calendar.MINUTE, minutes)
-
         val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -202,7 +201,37 @@ class AlarmSettingFragment : Fragment() {
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, setupTimeAlarm().timeInMillis, pendingIntent)
+    }
+
+    private fun setupTimeAlarm(): Calendar{
+        val calendar = Calendar.getInstance()
+        when {
+            bind.tvMonday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY) }
+            bind.tvTuesday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY) }
+            bind.tvWednesday.background.constantState == backgroundCircle?.constantState ->{
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY) }
+            bind.tvThursday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY) }
+            bind.tvFriday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY) }
+            bind.tvSaturday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY) }
+            bind.tvSunday.background.constantState == backgroundCircle?.constantState -> {
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) }
+            else -> Toast.makeText(requireContext(), "Выберите день недели", Toast.LENGTH_SHORT).show()
+        }
+
+        val str = bind.tvTime.text.toString()
+        val hours = str.substringBefore(" ").toInt()
+        val minutes = str.substringAfterLast(" ").toInt()
+        calendar.set(Calendar.HOUR_OF_DAY, hours)
+        calendar.set(Calendar.MINUTE, minutes)
+        calendar.set(Calendar.SECOND, 0)
+
+        return calendar
     }
 
     private fun setupLevelOnTextView(level: Level) {
@@ -276,14 +305,14 @@ class AlarmSettingFragment : Fragment() {
             openRingtonePicker()
         }
         bind.tvTime.setOnClickListener {
-            setupTime()
+            setupTimeToTextView()
         }
         bind.ivCancel.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
     }
 
-    private fun setupTime() {
+    private fun setupTimeToTextView() {
         val str = bind.tvTime.text.toString()
         val hours = str.substringBefore(" ").toInt()
         val minutes = str.substringAfterLast(" ").toInt()

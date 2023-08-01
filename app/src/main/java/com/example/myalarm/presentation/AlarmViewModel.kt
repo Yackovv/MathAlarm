@@ -54,7 +54,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             Log.d("11111", "Alarm ID: $alarmId")
             val alarm = getAlarmUseCase.invoke(alarmId)
             level = alarm.level
-            numberQuestion = alarm.countQuestion - 1
+            numberQuestion = alarm.countQuestion
             countOfQuestionFlow.emit(numberQuestion)
             ringtoneUriFlow.emit(alarm.ringtoneUriString.toUri())
         }
@@ -66,7 +66,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             rightAnswer = question.answer
             questionFlow.emit(question)
             Log.d("11111", question.example)
-            countOfQuestionFlow.emit(numberQuestion--)
+            countOfQuestionFlow.emit(--numberQuestion)
         }
     }
 

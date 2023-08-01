@@ -23,8 +23,8 @@ class AlarmRepositoryImpl(application: Application) : AlarmRepository {
         }
     }
 
-    override suspend fun addAlarm(alarm: Alarm) {
-        alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
+    override suspend fun addAlarm(alarm: Alarm): Long {
+        return alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
     }
 
     override suspend fun removeAlarm(alarm: Alarm) {

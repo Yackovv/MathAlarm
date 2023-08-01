@@ -13,7 +13,7 @@ interface AlarmDao {
     fun getAlarmList(): Flow<List<AlarmDbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addAlarm(alarmDbModel: AlarmDbModel)
+    suspend fun addAlarm(alarmDbModel: AlarmDbModel): Long
 
     @Query("delete from alarms where id =:alarmId")
     suspend fun removeAlarm(alarmId: Int)
