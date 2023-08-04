@@ -41,68 +41,69 @@ class AlarmWorker(
         val hours = alarmTime.substringBefore(" ").toInt()
         val minutes = alarmTime.substringAfterLast(" ").toInt()
         log(selectedDayList.toString())
+
+        val alarmManager =
+            context.getSystemService(AlarmManager::class.java) as AlarmManager
+        val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            alarmId,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val calendar = Calendar.getInstance()
+
         for (i in selectedDayList) {
             log("цикл for: $i")
-            val alarmManager =
-                context.getSystemService(AlarmManager::class.java) as AlarmManager
-            val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                alarmId,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-            val calendar = iDoNotNow(i, hours, minutes)
-            log("Установленное время: ${calendar.time}")
+
+            if(!iDoNotNow(calendar ,i, hours, minutes)){
+                continue
+            }
+
+            calendar.set(Calendar.DAY_OF_WEEK, i)
+            calendar.set(Calendar.HOUR_OF_DAY, hours)
+            calendar.set(Calendar.MINUTE, minutes)
+            calendar.set(Calendar.SECOND, 0)
+            log("time 2 - ${calendar.time}")
+
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+            log("Будильник установлен на: ${calendar.time}")
+            break
         }
     }
 
 
-    private fun iDoNotNow(selectedDay: Int, hours: Int, minutes: Int): Calendar {
+    private fun iDoNotNow(calendar: Calendar ,selectedDay: Int, hours: Int, minutes: Int): Boolean {
 
         log("iDoNotNow")
         log("time: $hours : $minutes")
-        val calendar = Calendar.getInstance()
 
         val todayDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
         val currentMinutes = calendar.get(Calendar.MINUTE)
 
-        calendar.set(Calendar.HOUR_OF_DAY, hours)
-        calendar.set(Calendar.MINUTE, minutes)
-        calendar.set(Calendar.SECOND, 0)
-        log("time 2 - ${calendar.time}")
-
         when {
             todayDayOfWeek > selectedDay -> {
-                setupDayFutureWeek(selectedDay, calendar)
-                sundayCheck(selectedDay, calendar)
-                return calendar
+                return false
             }
 
             todayDayOfWeek == selectedDay -> {
                 if (currentHour == hours) {
                     return if (currentMinutes >= minutes) {
-                        setupDayFutureWeek(selectedDay, calendar)
-                        sundayCheck(selectedDay, calendar)
-                        calendar
+                        false
                     } else {
-                        setupDayCurrentWeek(selectedDay, calendar)
-                        calendar
+                        true
                     }
                 } else if (currentHour > hours) {
-                    setupDayFutureWeek(selectedDay, calendar)
-                    return calendar
+                    return false
                 } else {
-                    setupDayCurrentWeek(selectedDay, calendar)
-                    return calendar
+                    return true
                 }
             }
 
             else -> {
-                setupDayCurrentWeek(selectedDay, calendar)
-                return calendar
+                return true
             }
         }
     }

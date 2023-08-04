@@ -13,9 +13,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.example.myalarm.R
 import com.example.myalarm.databinding.ActivityAlarmBinding
 import com.example.myalarm.presentation.viewmodels.AlarmViewModel
+import com.example.myalarm.services.AlarmWorker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -104,6 +107,12 @@ class AlarmActivity : AppCompatActivity() {
             viewModel.countOfQuestionFlow.collect {
                 if (it == 0) {
                     ringtone.stop()
+                    val workManager = WorkManager.getInstance(this@AlarmActivity)
+                    workManager.enqueueUniqueWork(
+                        AlarmWorker.WORK_NAME,
+                        ExistingWorkPolicy.REPLACE,
+                        AlarmWorker.makeRequest(alarmId)
+                    )
                     finish()
                 }
             }
