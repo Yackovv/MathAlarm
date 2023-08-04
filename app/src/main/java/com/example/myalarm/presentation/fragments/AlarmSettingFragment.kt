@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.fragments
 
 import android.app.Activity
 import android.app.AlarmManager
@@ -12,16 +12,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
+import com.example.myalarm.presentation.AlarmReceiver
+import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
+import com.example.myalarm.presentation.activities.MainActivity
+import com.example.myalarm.services.AlarmWorker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
@@ -117,7 +122,7 @@ class AlarmSettingFragment : Fragment() {
             )
 
             lifecycleScope.launch {
-                viewModel.alarmIdFlow.collect{
+                viewModel.alarmIdFlow.collect {
                     alarmId = it
                     Log.d("11111", "collect: $it, alarmId = $alarmId")
                     setupAlarm()
@@ -188,51 +193,6 @@ class AlarmSettingFragment : Fragment() {
     }
 
 
-    private fun setupAlarm(){
-        val context = requireContext()
-
-        val alarmManager =
-            requireActivity().getSystemService(AlarmManager::class.java) as AlarmManager
-
-        val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            PENDING_INTENT_RC,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, setupTimeAlarm().timeInMillis, pendingIntent)
-    }
-
-    private fun setupTimeAlarm(): Calendar{
-        val calendar = Calendar.getInstance()
-        when {
-            bind.tvMonday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY) }
-            bind.tvTuesday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY) }
-            bind.tvWednesday.background.constantState == backgroundCircle?.constantState ->{
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY) }
-            bind.tvThursday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY) }
-            bind.tvFriday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY) }
-            bind.tvSaturday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY) }
-            bind.tvSunday.background.constantState == backgroundCircle?.constantState -> {
-                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY) }
-            else -> Toast.makeText(requireContext(), "Выберите день недели", Toast.LENGTH_SHORT).show()
-        }
-
-        val str = bind.tvTime.text.toString()
-        val hours = str.substringBefore(" ").toInt()
-        val minutes = str.substringAfterLast(" ").toInt()
-        calendar.set(Calendar.HOUR_OF_DAY, hours)
-        calendar.set(Calendar.MINUTE, minutes)
-        calendar.set(Calendar.SECOND, 0)
-
-        return calendar
-    }
 
     private fun setupLevelOnTextView(level: Level) {
         with(bind) {
@@ -330,6 +290,15 @@ class AlarmSettingFragment : Fragment() {
         }
     }
 
+    private fun setupAlarm(){
+        val workManager = WorkManager.getInstance(requireActivity().application)
+        workManager.enqueueUniqueWork(
+            AlarmWorker.WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            AlarmWorker.makeRequest(alarmId)
+        )
+    }
+
     private fun hideFragment() {
         parentFragmentManager.beginTransaction().hide(this).commit()
         val fragment = requireActivity() as MainActivity
@@ -391,7 +360,6 @@ class AlarmSettingFragment : Fragment() {
     companion object {
 
         private const val PICK_RINGTONE_RC = 1
-        private const val PENDING_INTENT_RC = 111
         private const val UNDEFINED_ID = 0
         private const val ALARM_ID = "alarm_id"
         private const val SCREEN_MODE = "screen_mode"

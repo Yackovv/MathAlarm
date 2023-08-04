@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
 import com.example.myalarm.domain.enteties.Level
+import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
+import com.example.myalarm.presentation.activities.MainActivity
 import kotlinx.coroutines.launch
 
 class AlarmSelectLevelFragment : Fragment() {

@@ -1,6 +1,8 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.viewmodels
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,11 +14,13 @@ import com.example.myalarm.domain.usecases.AddAlarmUseCase
 import com.example.myalarm.domain.usecases.EditAlarmUseCase
 import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.myalarm.presentation.AlarmReceiver
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
-class AlarmSettingViewModel(application: Application) : AndroidViewModel(application) {
+class AlarmSettingViewModel(private val application: Application) : AndroidViewModel(application) {
 
     private val repository = AlarmRepositoryImpl(application)
 

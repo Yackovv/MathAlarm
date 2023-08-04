@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
-import com.example.myalarm.domain.enteties.Alarm
+import com.example.myalarm.presentation.AlarmListAdapter
+import com.example.myalarm.presentation.viewmodels.AlarmListViewModel
 import kotlinx.coroutines.launch
 
 class AlarmListFragment : Fragment() {

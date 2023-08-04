@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.viewmodels
 
 import android.app.Application
 import android.net.Uri
@@ -75,7 +75,8 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val answer = userAnswer.trim().toInt()
                 isRightAnswerFlow.emit(answer == rightAnswer)
-            } catch (_: NumberFormatException) {}
+            } catch (_: NumberFormatException) {
+            }
         }
     }
 

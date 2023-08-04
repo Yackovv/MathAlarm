@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.activities
 
 import android.app.NotificationManager
 import android.content.Context
@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.ActivityAlarmBinding
+import com.example.myalarm.presentation.viewmodels.AlarmViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

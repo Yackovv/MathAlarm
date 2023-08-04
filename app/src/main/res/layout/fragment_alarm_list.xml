@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    tools:context=".presentation.AlarmListFragment">
+    tools:context=".presentation.fragments.AlarmListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_alarm_list"

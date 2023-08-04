@@ -1,14 +1,10 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.activities
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myalarm.R
-import java.util.Calendar
+import com.example.myalarm.presentation.fragments.AlarmListFragment
+import com.example.myalarm.presentation.fragments.AlarmSettingFragment
 
 class MainActivity : AppCompatActivity() {
 

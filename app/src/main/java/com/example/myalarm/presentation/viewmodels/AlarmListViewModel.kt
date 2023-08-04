@@ -1,4 +1,4 @@
-package com.example.myalarm.presentation
+package com.example.myalarm.presentation.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
