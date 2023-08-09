@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.ALARM_SERVICE
 import android.util.Log
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -43,7 +44,7 @@ class AlarmWorker(
         log(selectedDayList.toString())
 
         val alarmManager =
-            context.getSystemService(AlarmManager::class.java) as AlarmManager
+            context.getSystemService(ALARM_SERVICE) as AlarmManager
         val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -65,9 +66,8 @@ class AlarmWorker(
             calendar.set(Calendar.HOUR_OF_DAY, hours)
             calendar.set(Calendar.MINUTE, minutes)
             calendar.set(Calendar.SECOND, 0)
-            log("time 2 - ${calendar.time}")
 
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
             log("Будильник установлен на: ${calendar.time}")
             break
         }
@@ -82,29 +82,26 @@ class AlarmWorker(
         val todayDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
         val currentMinutes = calendar.get(Calendar.MINUTE)
+        log("today: $todayDayOfWeek, selectedDay: $selectedDay")
 
-        when {
-            todayDayOfWeek > selectedDay -> {
-                return false
-            }
+        return when {
 
             todayDayOfWeek == selectedDay -> {
+                log("${currentMinutes < minutes}")
                 if (currentHour == hours) {
-                    return if (currentMinutes >= minutes) {
-                        false
-                    } else {
-                        true
-                    }
-                } else if (currentHour > hours) {
-                    return false
-                } else {
-                    return true
-                }
+                    log("${currentMinutes < minutes}")
+                    currentMinutes < minutes
+                } else currentHour <= hours
+            }
+
+            todayDayOfWeek > selectedDay -> {
+                false
             }
 
             else -> {
-                return true
+                true
             }
+
         }
     }
 
