@@ -1,7 +1,6 @@
 package com.example.myalarm.presentation.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,11 +49,16 @@ class AlarmListFragment : Fragment() {
 
         alarmListAdapter.onLongClickListener = {
             viewModel.removeAlarm(it)
+            viewModel.turnOffAlarm(requireContext(), it.id)
         }
 
         alarmListAdapter.onSwitchCompatListener = { alarm, isEnabled ->
             viewModel.changeEnabledState(alarm, isEnabled)
-            Log.d("11111", alarm.enabled.toString())
+            if (isEnabled) {
+                viewModel.turnOnAlarm(requireContext(), alarm.id)
+            } else {
+                viewModel.turnOffAlarm(requireContext(), alarm.id)
+            }
         }
 
         alarmListAdapter.onClickListener = {

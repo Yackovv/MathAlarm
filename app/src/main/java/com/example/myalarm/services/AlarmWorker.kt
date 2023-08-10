@@ -31,33 +31,35 @@ class AlarmWorker(
 
         runBlocking {
             val alarm = getAlarmUseCase.invoke(alarmId)
-            setupAlarm(alarm.getActiveDay(), alarm.alarmTime, alarm.id)
+            setupAlarm(alarm.getActiveDay(), alarm.getHour(), alarm.getMinute(), alarm.id)
         }
         log("doWork")
         return Result.success()
     }
 
-    private fun setupAlarm(selectedDayList: List<Int>, alarmTime: String, alarmId: Int) {
+    private fun setupAlarm(selectedDayList: List<Int>, hour: Int, minute: Int, alarmId: Int) {
         log("setupAlarm")
-        val hours = alarmTime.substringBefore(" ").toInt()
-        val minutes = alarmTime.substringAfterLast(" ").toInt()
         log(selectedDayList.toString())
 
         val alarmManager =
             context.getSystemService(ALARM_SERVICE) as AlarmManager
+
         val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
+        log("alarm ID in AlarmWorker: $alarmId")
         val pendingIntent = PendingIntent.getBroadcast(
-            context,
+            applicationContext,
             alarmId,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT
         )
+
+
 
         val calendar = Calendar.getInstance()
         val currentTime = calendar.timeInMillis
 
-        calendar.set(Calendar.HOUR_OF_DAY, hours)
-        calendar.set(Calendar.MINUTE, minutes)
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
         calendar.set(Calendar.SECOND, 0)
 
         var temp = true

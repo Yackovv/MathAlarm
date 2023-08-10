@@ -109,6 +109,19 @@
         app:layout_constraintTop_toTopOf="@+id/iv_speaker"
         app:srcCompat="@drawable/no_sound" />
 
+    <TextView
+        android:id="@+id/tv_counter"
+        android:background="@drawable/circle_day"
+        android:layout_width="30dp"
+        android:gravity="center"
+        android:layout_height="30dp"
+        android:textColor="@color/white_color"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_timer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_timer"
+        tools:text="10" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

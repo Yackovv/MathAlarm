@@ -45,7 +45,7 @@ class AlarmActivity : AppCompatActivity() {
 
     private lateinit var ringtone: Ringtone
 
-    private fun log(str: String){
+    private fun log(str: String) {
         Log.d("11111", str)
     }
 
@@ -105,6 +105,7 @@ class AlarmActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.countOfQuestionFlow.collect {
+                bind.tvCounter.text = it.toString()
                 if (it == 0) {
                     ringtone.stop()
                     val workManager = WorkManager.getInstance(this@AlarmActivity)
@@ -130,7 +131,7 @@ class AlarmActivity : AppCompatActivity() {
         }
     }
 
-    private fun cancelNotification(){
+    private fun cancelNotification() {
         val notificationManager =
             getSystemService(NotificationManager::class.java) as NotificationManager
         notificationManager.cancel(notificationId)
@@ -143,7 +144,7 @@ class AlarmActivity : AppCompatActivity() {
             throw RuntimeException("Alarm ID is absent")
         }
 
-        if (!intent.hasExtra(EXTRA_NOTIFICATION_ID)){
+        if (!intent.hasExtra(EXTRA_NOTIFICATION_ID)) {
             throw RuntimeException("Notification ID is absent")
         }
 

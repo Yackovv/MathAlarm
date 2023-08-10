@@ -32,6 +32,14 @@ data class Alarm(
         return activeDayList.toList()
     }
 
+    fun getHour(): Int{
+        return alarmTime.substringBefore(" ").toInt()
+    }
+
+    fun getMinute(): Int{
+        return alarmTime.substringAfterLast(" ").toInt()
+    }
+
     companion object {
         private const val UNDEFINED_ID = 0
         private val DEFAULT_URI_RINGTONE =
