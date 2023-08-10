@@ -22,13 +22,13 @@ data class Alarm(
 
     fun getActiveDay(): List<Int>{
         val activeDayList = mutableListOf<Int>()
-        if(sunday) activeDayList.add(1)
         if(monday) activeDayList.add(2)
         if(tuesday) activeDayList.add(3)
         if(wednesday) activeDayList.add(4)
         if(thursday) activeDayList.add(5)
         if(friday) activeDayList.add(6)
         if(saturday) activeDayList.add(7)
+        if(sunday) activeDayList.add(1)
         return activeDayList.toList()
     }
 

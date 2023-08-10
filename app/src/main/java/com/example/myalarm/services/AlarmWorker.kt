@@ -54,71 +54,38 @@ class AlarmWorker(
         )
 
         val calendar = Calendar.getInstance()
+        val currentTime = calendar.timeInMillis
 
-        for (i in selectedDayList) {
-            log("цикл for: $i")
+        calendar.set(Calendar.HOUR_OF_DAY, hours)
+        calendar.set(Calendar.MINUTE, minutes)
+        calendar.set(Calendar.SECOND, 0)
 
-            if(!iDoNotNow(calendar ,i, hours, minutes)){
-                continue
+        var temp = true
+        while (temp) {
+            for (i in selectedDayList) {
+                calendar.set(Calendar.DAY_OF_WEEK, i)
+                if (currentTime < calendar.timeInMillis) {
+                    check(calendar, currentTime)
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                    log("Будильник установлен на: ${calendar.time}")
+                    temp = false
+                    break
+                }
             }
-
-            calendar.set(Calendar.DAY_OF_WEEK, i)
-            calendar.set(Calendar.HOUR_OF_DAY, hours)
-            calendar.set(Calendar.MINUTE, minutes)
-            calendar.set(Calendar.SECOND, 0)
-
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-            log("Будильник установлен на: ${calendar.time}")
-            break
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
+        log("--- while end ---")
     }
 
-
-    private fun iDoNotNow(calendar: Calendar ,selectedDay: Int, hours: Int, minutes: Int): Boolean {
-
-        log("iDoNotNow")
-        log("time: $hours : $minutes")
-
-        val todayDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        val currentMinutes = calendar.get(Calendar.MINUTE)
-        log("today: $todayDayOfWeek, selectedDay: $selectedDay")
-
-        return when {
-
-            todayDayOfWeek == selectedDay -> {
-                log("${currentMinutes < minutes}")
-                if (currentHour == hours) {
-                    log("${currentMinutes < minutes}")
-                    currentMinutes < minutes
-                } else currentHour <= hours
-            }
-
-            todayDayOfWeek > selectedDay -> {
-                false
-            }
-
-            else -> {
-                true
-            }
-
-        }
+    private fun check(calendar: Calendar, currentTime: Long){
+        log("$currentTime, ${calendar.timeInMillis}")
     }
 
-    private fun setupDayCurrentWeek(selectedDay: Int, calendar: Calendar){
-        calendar.set(Calendar.DAY_OF_WEEK, selectedDay)
-    }
-
-    private fun setupDayFutureWeek(selectedDay: Int, calendar: Calendar){
-        calendar.set(Calendar.DAY_OF_WEEK, selectedDay)
-        calendar.add(Calendar.DAY_OF_WEEK, 7)
-    }
-
-    private fun sundayCheck(selectedDay: Int, calendar: Calendar) {
-        if (selectedDay == Calendar.SUNDAY) {
-            calendar.add(Calendar.DAY_OF_WEEK, -7)
-        }
-    }
 
     private fun log(str: String) {
         Log.d("11111", str)
