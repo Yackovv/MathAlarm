@@ -5,7 +5,7 @@ import android.media.RingtoneManager
 data class Alarm(
     val id: Int = UNDEFINED_ID,
     val enabled: Boolean = true,
-    val alarmTime: String = "00:00",
+    val alarmTime: String = "00 : 00",
     val level: Level = Level.EASY,
     val countQuestion: Int = 1,
     val ringtoneUriString: String = DEFAULT_URI_RINGTONE,

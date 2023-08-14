@@ -1,13 +1,10 @@
 package com.example.myalarm.presentation.fragments
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,15 +20,14 @@ import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.presentation.AlarmReceiver
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
-import com.example.myalarm.presentation.activities.MainActivity
 import com.example.myalarm.services.AlarmWorker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import kotlin.properties.Delegates
 
 class AlarmSettingFragment : Fragment() {
@@ -40,7 +36,6 @@ class AlarmSettingFragment : Fragment() {
     private val bind
         get() = _bind ?: throw RuntimeException("FragmentAlarmSettingBinding == null")
 
-    private var screenMode = SCREEN_MODE_UNKNOWN
     private var alarmId = UNDEFINED_ID
 
     private val viewModel by lazy {
@@ -54,10 +49,7 @@ class AlarmSettingFragment : Fragment() {
     private var uri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
     private var countOfQuestion by Delegates.notNull<Int>()
-
-    private fun log(tag: String) {
-        Log.d("11111", tag)
-    }
+    private lateinit var jobAlarm: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +61,7 @@ class AlarmSettingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        log("onCreateView")
+        logg("onCreateView")
         _bind = FragmentAlarmSettingBinding.inflate(inflater, container, false)
         return bind.root
     }
@@ -77,9 +69,10 @@ class AlarmSettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupScreenMode()
-        setupClickListeners()
+        logg("${this@AlarmSettingFragment}")
 
+        setupClickListeners()
+        launchModeEdit()
 
         lifecycleScope.launch {
             AlarmSettingViewModel.countQuestionFlow.collect {
@@ -93,62 +86,12 @@ class AlarmSettingFragment : Fragment() {
         }
     }
 
-    private fun setupScreenMode() {
-        when (screenMode) {
-            MODE_ADD -> launchModeAdd()
-            MODE_EDIT -> launchModeEdit()
-        }
-    }
-
-    private fun launchModeAdd() {
-        bind.tvLevelDescription.text = getString(R.string.level_easy)
-        bind.tvMusicDescription.text = getRingtoneTitle(uri)
-
-
-        bind.ivSave.setOnClickListener {
-            viewModel.addAlarm(
-                alarmTime = bind.tvTime.text.toString(),
-                level = setupLevelOnAlarm(bind.tvLevelDescription.text.toString()),
-                countQuestion = countOfQuestion,
-                ringtoneUriString = uri.toString(),
-                vibration = bind.alarmSwitch.isChecked,
-                monday = checkSelectedDay(bind.tvMonday),
-                tuesday = checkSelectedDay(bind.tvTuesday),
-                wednesday = checkSelectedDay(bind.tvWednesday),
-                thursday = checkSelectedDay(bind.tvThursday),
-                friday = checkSelectedDay(bind.tvFriday),
-                saturday = checkSelectedDay(bind.tvSaturday),
-                sunday = checkSelectedDay(bind.tvSunday)
-            )
-
-            lifecycleScope.launch {
-                viewModel.alarmIdFlow.collect {
-                    alarmId = it
-                    Log.d("11111", "collect: $it, alarmId = $alarmId")
-                    setupAlarm()
-                    parentFragmentManager.popBackStack()
-                }
-            }
-        }
-
-        bind.llLevel.setOnClickListener {
-            val fragment = AlarmSelectLevelFragment.newInstanceAdd()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit()
-
-            hideFragment()
-        }
-    }
-
     private fun launchModeEdit() {
         viewModel.getAlarm(alarmId)
-        lifecycleScope.launch {
+        jobAlarm = lifecycleScope.launch {
             viewModel.alarmFlow.collect {
 
-                log("collect modeEdit")
+                logg("collect modeEdit")
 
                 bind.tvTime.text = it.alarmTime
                 uri = it.ringtoneUriString.toUri()
@@ -158,41 +101,24 @@ class AlarmSettingFragment : Fragment() {
                 bind.alarmSwitch.isChecked = it.vibration
             }
         }
-
-        bind.ivSave.setOnClickListener {
-            viewModel.editAlarm(
-                alarmTime = bind.tvTime.text.toString(),
-                level = setupLevelOnAlarm(bind.tvLevelDescription.text.toString()),
-                countQuestion = countOfQuestion,
-                ringtoneUriString = uri.toString(),
-                vibration = bind.alarmSwitch.isChecked,
-                monday = checkSelectedDay(bind.tvMonday),
-                tuesday = checkSelectedDay(bind.tvTuesday),
-                wednesday = checkSelectedDay(bind.tvWednesday),
-                thursday = checkSelectedDay(bind.tvThursday),
-                friday = checkSelectedDay(bind.tvFriday),
-                saturday = checkSelectedDay(bind.tvSaturday),
-                sunday = checkSelectedDay(bind.tvSunday)
-            )
-            setupAlarm()
-            parentFragmentManager.popBackStack()
-        }
-
-        bind.llLevel.setOnClickListener {
-            val levelFromTvLevel = setupLevelOnAlarm(bind.tvLevelDescription.text.toString())
-            val fragment =
-                AlarmSelectLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_container, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack("setting")
-                .commit()
-
-            hideFragment()
-        }
     }
 
-
+    private fun alarmSave() {
+        viewModel.editAlarm(
+            alarmTime = bind.tvTime.text.toString(),
+            level = setupLevelOnAlarm(bind.tvLevelDescription.text.toString()),
+            countQuestion = countOfQuestion,
+            ringtoneUriString = uri.toString(),
+            vibration = bind.alarmSwitch.isChecked,
+            monday = checkSelectedDay(bind.tvMonday),
+            tuesday = checkSelectedDay(bind.tvTuesday),
+            wednesday = checkSelectedDay(bind.tvWednesday),
+            thursday = checkSelectedDay(bind.tvThursday),
+            friday = checkSelectedDay(bind.tvFriday),
+            saturday = checkSelectedDay(bind.tvSaturday),
+            sunday = checkSelectedDay(bind.tvSunday)
+        )
+    }
 
     private fun setupLevelOnTextView(level: Level) {
         with(bind) {
@@ -268,8 +194,29 @@ class AlarmSettingFragment : Fragment() {
             setupTimeToTextView()
         }
         bind.ivCancel.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            closeFragment()
         }
+        bind.llLevel.setOnClickListener {
+            alarmSave()
+            val levelFromTvLevel = setupLevelOnAlarm(bind.tvLevelDescription.text.toString())
+            val fragment =
+                AlarmSelectLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .setReorderingAllowed(true)
+                .addToBackStack("setting")
+                .commit()
+
+        }
+        bind.ivSave.setOnClickListener {
+            alarmSave()
+            closeFragment()
+            setupAlarm()
+        }
+    }
+
+    private fun closeFragment() {
+        parentFragmentManager.popBackStack()
     }
 
     private fun setupTimeToTextView() {
@@ -290,7 +237,7 @@ class AlarmSettingFragment : Fragment() {
         }
     }
 
-    private fun setupAlarm(){
+    private fun setupAlarm() {
         val workManager = WorkManager.getInstance(requireActivity().application)
         workManager.enqueueUniqueWork(
             AlarmWorker.WORK_NAME,
@@ -299,30 +246,19 @@ class AlarmSettingFragment : Fragment() {
         )
     }
 
-    private fun hideFragment() {
-        parentFragmentManager.beginTransaction().hide(this).commit()
-        val fragment = requireActivity() as MainActivity
-        fragment.fragment = this
+    override fun onDestroyView() {
+        super.onDestroyView()
+        jobAlarm.cancel()
     }
 
     private fun parseArguments() {
 
         val arguments = requireArguments()
-        if (!arguments.containsKey(SCREEN_MODE)) {
-            throw RuntimeException("Screen mode is absent")
-        }
-        val scMode = arguments.getString(SCREEN_MODE)
-        if (scMode != MODE_ADD && scMode != MODE_EDIT) {
-            throw RuntimeException("Unknown screen mode $scMode")
-        }
-        screenMode = scMode
-        if (screenMode == MODE_EDIT) {
-            if (!arguments.containsKey(ALARM_ID)) {
-                throw RuntimeException("Alarm id is absent")
-            }
-            alarmId = arguments.getInt(ALARM_ID)
-        }
 
+        if (!arguments.containsKey(ALARM_ID)) {
+            throw RuntimeException("Alarm id is absent")
+        }
+        alarmId = arguments.getInt(ALARM_ID)
     }
 
     private fun openRingtonePicker() {
@@ -352,34 +288,16 @@ class AlarmSettingFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _bind = null
-    }
-
     companion object {
 
         private const val PICK_RINGTONE_RC = 1
         private const val UNDEFINED_ID = 0
         private const val ALARM_ID = "alarm_id"
-        private const val SCREEN_MODE = "screen_mode"
-        private const val MODE_ADD = "mode_add"
-        private const val MODE_EDIT = "mode_edit"
-        private const val SCREEN_MODE_UNKNOWN = ""
 
-        fun newInstanceEditAlarm(alarmId: Int): AlarmSettingFragment {
+        fun newInstanceAddAlarm(alarmId: Int): AlarmSettingFragment {
             return AlarmSettingFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ALARM_ID, alarmId)
-                    putString(SCREEN_MODE, MODE_EDIT)
-                }
-            }
-        }
-
-        fun newInstanceAddAlarm(): AlarmSettingFragment {
-            return AlarmSettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(SCREEN_MODE, MODE_ADD)
                 }
             }
         }

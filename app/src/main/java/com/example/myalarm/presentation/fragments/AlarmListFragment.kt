@@ -9,8 +9,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmListAdapter
 import com.example.myalarm.presentation.viewmodels.AlarmListViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class AlarmListFragment : Fragment() {
@@ -24,6 +26,8 @@ class AlarmListFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(this)[AlarmListViewModel::class.java]
     }
+
+    private lateinit var job: Job
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +51,16 @@ class AlarmListFragment : Fragment() {
             }
         }
 
+        job = lifecycleScope.launch {
+            viewModel.newAlarmId.collect {
+                logg("AlarmListFragment call collect $it")
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it))
+                    .commit()
+            }
+        }
+
         alarmListAdapter.onLongClickListener = {
             viewModel.removeAlarm(it)
             viewModel.turnOffAlarm(requireContext(), it.id)
@@ -64,20 +78,18 @@ class AlarmListFragment : Fragment() {
         alarmListAdapter.onClickListener = {
             requireActivity().supportFragmentManager.beginTransaction()
                 .addToBackStack(null)
-                .replace(R.id.main_container, AlarmSettingFragment.newInstanceEditAlarm(it.id))
+                .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it.id))
                 .commit()
         }
 
         bind.ivAddAlarm.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm())
-                .commit()
+            viewModel.addAlarm()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
+        job.cancel()
     }
 }

@@ -4,11 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myalarm.R
 import com.example.myalarm.presentation.fragments.AlarmListFragment
-import com.example.myalarm.presentation.fragments.AlarmSettingFragment
 
 class MainActivity : AppCompatActivity() {
-
-    lateinit var fragment: AlarmSettingFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

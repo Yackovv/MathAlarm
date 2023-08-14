@@ -11,11 +11,14 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.enteties.Alarm
+import com.example.myalarm.domain.usecases.AddAlarmUseCase
 import com.example.myalarm.domain.usecases.EditAlarmUseCase
 import com.example.myalarm.domain.usecases.GetAlarmListUseCase
 import com.example.myalarm.domain.usecases.RemoveAlarmUseCase
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
 import com.example.myalarm.services.AlarmWorker
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class AlarmListViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,16 +26,23 @@ class AlarmListViewModel(application: Application) : AndroidViewModel(applicatio
     private val repository = AlarmRepositoryImpl(application)
 
     private val getAlarmListUseCase = GetAlarmListUseCase(repository)
-
-    //    private val getAlarmUseCase = GetAlarmUseCase(repository)
+    private val addAlarmUseCase = AddAlarmUseCase(repository)
     private val editAlarmUseCase = EditAlarmUseCase(repository)
     private val removeAlarmUseCase = RemoveAlarmUseCase(repository)
 
     val alarmList = getAlarmListUseCase.invoke()
+    val newAlarmId = MutableSharedFlow<Int>()
 
     fun removeAlarm(alarm: Alarm) {
         viewModelScope.launch {
             removeAlarmUseCase.invoke(alarm)
+        }
+    }
+
+    fun addAlarm() {
+        viewModelScope.launch {
+            logg("AlarmListViewModel call emit")
+            newAlarmId.emit(addAlarmUseCase.invoke(Alarm()).toInt())
         }
     }
 
