@@ -10,6 +10,8 @@ import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.usecases.EditAlarmUseCase
 import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.myalarm.logg
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -24,11 +26,6 @@ class AlarmSettingViewModel(private val application: Application) : AndroidViewM
 
     val alarmFlow = MutableStateFlow(Alarm())
     val questionFlow = MutableSharedFlow<Question>(replay = 1)
-
-    companion object {
-        val levelFlow = MutableStateFlow(Level.EASY)
-        val countQuestionFlow = MutableStateFlow(1)
-    }
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
@@ -45,7 +42,14 @@ class AlarmSettingViewModel(private val application: Application) : AndroidViewM
         }
     }
 
-    fun setupLevelAndCountOfQuestion() {
+    fun setupLevelAndCountOfQuestion(alarmId: Int, level: Level, countQuestion: Int) {
+        viewModelScope.launch(Dispatchers.Unconfined) {
+            val alarm = getAlarmUseCase.invoke(alarmId)
+            val changedAlarm = alarm.copy(level = level, countQuestion = countQuestion)
+            editAlarmUseCase.invoke(changedAlarm)
+            logg("From AlarmSettingViewModel")
+            logg("alarmId = $alarmId, level = $level, count question = $countQuestion")
+        }
     }
 
     fun editAlarm(

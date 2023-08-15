@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
 import com.example.myalarm.domain.enteties.Level
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
 import kotlinx.coroutines.launch
 
@@ -83,11 +84,9 @@ class AlarmSelectLevelFragment : Fragment() {
 
         bind.ivSave.setOnClickListener {
             val countQuestion = bind.seekBar.progress
-            lifecycleScope.launch {
-                AlarmSettingViewModel.levelFlow.emit(selectedLevel)
-                AlarmSettingViewModel.countQuestionFlow.emit(countQuestion)
-                closeFragment()
-            }
+            logg("alarmId = $alarmId, level = $selectedLevel, count question = $countQuestion")
+            viewModel.setupLevelAndCountOfQuestion(alarmId, selectedLevel, countQuestion)
+            closeFragment()
         }
 
         bind.ivCancel.setOnClickListener {

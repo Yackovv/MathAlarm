@@ -5,7 +5,6 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
-import android.util.Log
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Worker
@@ -13,8 +12,11 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class AlarmWorker(
@@ -29,30 +31,29 @@ class AlarmWorker(
 
         val alarmId = workerParameters.inputData.getInt(ALARM_ID, 0)
 
-        runBlocking {
+        CoroutineScope(Dispatchers.Unconfined).launch {
             val alarm = getAlarmUseCase.invoke(alarmId)
             setupAlarm(alarm.getActiveDay(), alarm.getHour(), alarm.getMinute(), alarm.id)
         }
-        log("doWork")
+        logg("doWork")
         return Result.success()
     }
 
     private fun setupAlarm(selectedDayList: List<Int>, hour: Int, minute: Int, alarmId: Int) {
-        log("setupAlarm")
-        log(selectedDayList.toString())
+        logg("setupAlarm")
+        logg(selectedDayList.toString())
 
         val alarmManager =
             context.getSystemService(ALARM_SERVICE) as AlarmManager
 
         val intent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
-        log("alarm ID in AlarmWorker: $alarmId")
+        logg("alarm ID in AlarmWorker: $alarmId")
         val pendingIntent = PendingIntent.getBroadcast(
             applicationContext,
             alarmId,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-
 
 
         val calendar = Calendar.getInstance()
@@ -73,7 +74,7 @@ class AlarmWorker(
                         calendar.timeInMillis,
                         pendingIntent
                     )
-                    log("Будильник установлен на: ${calendar.time}")
+                    logg("Будильник установлен на: ${calendar.time}")
                     temp = false
                     break
                 }
@@ -81,17 +82,14 @@ class AlarmWorker(
             calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        log("--- while end ---")
+        logg("--- while end ---")
     }
 
-    private fun check(calendar: Calendar, currentTime: Long){
-        log("$currentTime, ${calendar.timeInMillis}")
+    private fun check(calendar: Calendar, currentTime: Long) {
+        logg("$currentTime, ${calendar.timeInMillis}")
     }
 
 
-    private fun log(str: String) {
-        Log.d("11111", str)
-    }
 
     companion object {
 

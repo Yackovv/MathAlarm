@@ -28,7 +28,6 @@ import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 class AlarmSettingFragment : Fragment() {
 
@@ -48,7 +47,7 @@ class AlarmSettingFragment : Fragment() {
 
     private var uri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
-    private var countOfQuestion by Delegates.notNull<Int>()
+    private var countOfQuestion = 1
     private lateinit var jobAlarm: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,17 +72,6 @@ class AlarmSettingFragment : Fragment() {
 
         setupClickListeners()
         launchModeEdit()
-
-        lifecycleScope.launch {
-            AlarmSettingViewModel.countQuestionFlow.collect {
-                countOfQuestion = it
-            }
-        }
-        lifecycleScope.launch {
-            AlarmSettingViewModel.levelFlow.collect {
-                setupLevelOnTextView(it)
-            }
-        }
     }
 
     private fun launchModeEdit() {
@@ -94,6 +82,7 @@ class AlarmSettingFragment : Fragment() {
                 logg("collect modeEdit")
 
                 bind.tvTime.text = it.alarmTime
+                countOfQuestion = it.countQuestion
                 uri = it.ringtoneUriString.toUri()
                 bind.tvMusicDescription.text = getRingtoneTitle(uri)
                 checkActiveDay(it)
