@@ -84,7 +84,7 @@ class AlarmSettingFragment : Fragment() {
                 bind.tvTime.text = it.alarmTime
                 countOfQuestion = it.countQuestion
                 uri = it.ringtoneUriString.toUri()
-                bind.tvMusicDescription.text = getRingtoneTitle(uri)
+                setupRingtoneTitleToTextView()
                 checkActiveDay(it)
                 setupLevelOnTextView(it.level)
                 bind.alarmSwitch.isChecked = it.vibration
@@ -187,9 +187,8 @@ class AlarmSettingFragment : Fragment() {
         }
         bind.llLevel.setOnClickListener {
             alarmSave()
-            val levelFromTvLevel = setupLevelOnAlarm(bind.tvLevelDescription.text.toString())
             val fragment =
-                AlarmSelectLevelFragment.newInstanceEdit(alarmId, levelFromTvLevel, countOfQuestion)
+                AlarmSelectLevelFragment.newInstanceEdit(alarmId)
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, fragment)
                 .setReorderingAllowed(true)
@@ -260,12 +259,24 @@ class AlarmSettingFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_RINGTONE_RC && resultCode == Activity.RESULT_OK) {
-            uri =
-                data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            bind.tvMusicDescription.text = getRingtoneTitle(uri)
+            uri = data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            if(uri == null){
+                setupDefaultRingtoneUri()
+                setupRingtoneTitleToTextView()
+            } else {
+                setupRingtoneTitleToTextView()
+            }
         } else {
-            uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            setupDefaultRingtoneUri()
         }
+    }
+
+    private fun setupRingtoneTitleToTextView() {
+        bind.tvMusicDescription.text = getRingtoneTitle(uri)
+    }
+
+    private fun setupDefaultRingtoneUri(){
+        uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     }
 
     private fun getRingtoneTitle(uri: Uri?): String {
@@ -273,7 +284,7 @@ class AlarmSettingFragment : Fragment() {
         return if (uri != null) {
             RingtoneManager.getRingtone(context, uri).getTitle(context)
         } else {
-            RingtoneManager.getRingtone(context, this.uri).getTitle(context)
+            ""
         }
     }
 

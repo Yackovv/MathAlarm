@@ -42,13 +42,12 @@ class AlarmSettingViewModel(private val application: Application) : AndroidViewM
         }
     }
 
-    fun setupLevelAndCountOfQuestion(alarmId: Int, level: Level, countQuestion: Int) {
+    fun setupLevelAndCountOfQuestion(level: Level, countQuestion: Int) {
         viewModelScope.launch(Dispatchers.Unconfined) {
-            val alarm = getAlarmUseCase.invoke(alarmId)
-            val changedAlarm = alarm.copy(level = level, countQuestion = countQuestion)
+            val changedAlarm = alarmFlow.value.copy(level = level, countQuestion = countQuestion)
             editAlarmUseCase.invoke(changedAlarm)
             logg("From AlarmSettingViewModel")
-            logg("alarmId = $alarmId, level = $level, count question = $countQuestion")
+            logg("alarmId = ${changedAlarm.id}, level = $level, count question = $countQuestion")
         }
     }
 

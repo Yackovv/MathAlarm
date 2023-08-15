@@ -6,7 +6,6 @@ import android.content.Intent
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -45,16 +44,9 @@ class AlarmActivity : AppCompatActivity() {
 
     private lateinit var ringtone: Ringtone
 
-    private fun log(str: String) {
-        Log.d("11111", str)
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(bind.root)
-
-        log("onCreate")
 
         parseIntent()
         viewModel.getAlarm(alarmId)

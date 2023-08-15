@@ -27,7 +27,6 @@ class AlarmSelectLevelFragment : Fragment() {
 
 
     private var selectedLevel = Level.EASY
-    private var countOfQuestion = 1
     private var alarmId = UNDEFINED_ID
     private val colorBlue by lazy {
         ContextCompat.getColor(requireContext(), R.color.blue_color)
@@ -50,22 +49,24 @@ class AlarmSelectLevelFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getAlarm(alarmId)
+
         setupClickListeners()
-        launchModeEdit()
 
         lifecycleScope.launch {
             viewModel.questionFlow.collect {
                 bind.tvExample.text = it.example
             }
         }
-    }
 
-    private fun launchModeEdit() {
-
-        bind.seekBar.progress = countOfQuestion
-        viewModel.generateQuestion(selectedLevel)
-        dropAllColors()
-        setupColorSelectedLevel(selectedLevel)
+        lifecycleScope.launch {
+            viewModel.alarmFlow.collect {
+                bind.seekBar.progress = it.countQuestion
+                dropAllColors()
+                setupColorSelectedLevel(it.level)
+                viewModel.generateQuestion(it.level)
+            }
+        }
     }
 
     private fun setupColorSelectedLevel(level: Level) {
@@ -85,7 +86,7 @@ class AlarmSelectLevelFragment : Fragment() {
         bind.ivSave.setOnClickListener {
             val countQuestion = bind.seekBar.progress
             logg("alarmId = $alarmId, level = $selectedLevel, count question = $countQuestion")
-            viewModel.setupLevelAndCountOfQuestion(alarmId, selectedLevel, countQuestion)
+            viewModel.setupLevelAndCountOfQuestion(selectedLevel, countQuestion)
             closeFragment()
         }
 
@@ -153,18 +154,6 @@ class AlarmSelectLevelFragment : Fragment() {
             throw RuntimeException("Alarm id is absent")
         }
         alarmId = arguments.getInt(ALARM_ID)
-
-        if (!arguments.containsKey(SELECTED_LEVEL)) {
-            throw RuntimeException("Selected level is absent")
-        }
-        val tempLevel = arguments.getParcelable<Level>(SELECTED_LEVEL)
-            ?: throw RuntimeException("Unknown level")
-        selectedLevel = tempLevel
-
-        if (!arguments.containsKey(COUNT_OF_QUESTION)) {
-            throw RuntimeException("Count of question is absent")
-        }
-        countOfQuestion = arguments.getInt(COUNT_OF_QUESTION)
     }
 
 
@@ -177,19 +166,11 @@ class AlarmSelectLevelFragment : Fragment() {
 
         private const val UNDEFINED_ID = 0
         private const val ALARM_ID = "alarm_id"
-        private const val SELECTED_LEVEL = "selected_level"
-        private const val COUNT_OF_QUESTION = "count_of_question"
 
-        fun newInstanceEdit(
-            alarmId: Int,
-            level: Level,
-            countOfQuestion: Int
-        ): AlarmSelectLevelFragment {
+        fun newInstanceEdit(alarmId: Int): AlarmSelectLevelFragment {
             return AlarmSelectLevelFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ALARM_ID, alarmId)
-                    putParcelable(SELECTED_LEVEL, level)
-                    putInt(COUNT_OF_QUESTION, countOfQuestion)
                 }
             }
         }
