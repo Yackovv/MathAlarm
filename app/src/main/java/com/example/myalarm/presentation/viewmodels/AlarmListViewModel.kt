@@ -70,7 +70,7 @@ class AlarmListViewModel(application: Application) : AndroidViewModel(applicatio
             context,
             alarmId,
             cancelIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_MUTABLE
         )
 
         cancelPendingIntent?.let {

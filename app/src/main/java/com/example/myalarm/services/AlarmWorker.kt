@@ -52,7 +52,7 @@ class AlarmWorker(
             applicationContext,
             alarmId,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
 
 
@@ -88,8 +88,6 @@ class AlarmWorker(
     private fun check(calendar: Calendar, currentTime: Long) {
         logg("$currentTime, ${calendar.timeInMillis}")
     }
-
-
 
     companion object {
 

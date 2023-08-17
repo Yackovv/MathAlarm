@@ -48,6 +48,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
     val countOfQuestionFlow = MutableSharedFlow<Int>(replay = 1)
     val ringtoneUriFlow = MutableSharedFlow<Uri>(replay = 1)
     val timerFlow = MutableSharedFlow<String>()
+    val vibrationFlow = MutableSharedFlow<Boolean>()
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
@@ -57,6 +58,7 @@ class AlarmViewModel(application: Application) : AndroidViewModel(application) {
             numberQuestion = alarm.countQuestion
             countOfQuestionFlow.emit(numberQuestion)
             ringtoneUriFlow.emit(alarm.ringtoneUriString.toUri())
+            vibrationFlow.emit(alarm.vibration)
         }
     }
 
