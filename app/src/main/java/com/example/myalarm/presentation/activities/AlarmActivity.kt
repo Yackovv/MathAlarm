@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
@@ -56,6 +57,7 @@ class AlarmActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         parseIntent()
+        setupMaxVolume()
         setupFlagsForWindow()
         viewModel.getAlarm(alarmId)
         viewModel.generateQuestion()
@@ -118,12 +120,7 @@ class AlarmActivity : AppCompatActivity() {
                     isExampleEnd = true
                     ringtone.stop()
                     vibrator.cancel()
-                    val workManager = WorkManager.getInstance(this@AlarmActivity)
-                    workManager.enqueueUniqueWork(
-                        AlarmWorker.WORK_NAME,
-                        ExistingWorkPolicy.REPLACE,
-                        AlarmWorker.makeRequest(alarmId)
-                    )
+                    setupAlarmOnNextDay()
                     finishAffinity()
                 }
             }
@@ -142,7 +139,16 @@ class AlarmActivity : AppCompatActivity() {
         }
     }
 
-    private fun restartAlarm(){
+    private fun setupAlarmOnNextDay() {
+        val workManager = WorkManager.getInstance(this@AlarmActivity)
+        workManager.enqueueUniqueWork(
+            AlarmWorker.WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            AlarmWorker.makeRequest(alarmId)
+        )
+    }
+
+    private fun restartAlarm() {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val receiverIntent = AlarmReceiver.newIntentAlarmReceiver(this, alarmId)
         val pendingIntentRestart = PendingIntent.getBroadcast(
@@ -157,6 +163,18 @@ class AlarmActivity : AppCompatActivity() {
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
             pendingIntentRestart
+        )
+    }
+
+    private fun setupMaxVolume() {
+        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+
+        val maxCallVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_RING,
+            maxCallVolume,
+            AudioManager.FLAG_SHOW_UI
         )
     }
 
@@ -198,7 +216,7 @@ class AlarmActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        if(!isExampleEnd){
+        if (!isExampleEnd) {
             restartAlarm()
         }
     }
