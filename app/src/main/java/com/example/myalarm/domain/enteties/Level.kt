@@ -1,5 +1,9 @@
 package com.example.myalarm.domain.enteties
 
-enum class Level {
-    EASY, PRENORMAL, NORMAL, HARD;
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+enum class Level: Parcelable {
+    EASY, NORMAL, HARD, PRO;
 }

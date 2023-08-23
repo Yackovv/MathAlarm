@@ -6,7 +6,7 @@ import com.example.myalarm.domain.repository.AlarmRepository
 class GetAlarmUseCase(
     private val repository: AlarmRepository
 ) {
-    operator fun invoke(alarmId: Int): Alarm {
+    suspend operator fun invoke(alarmId: Int): Alarm {
         return repository.getAlarm(alarmId)
     }
 }

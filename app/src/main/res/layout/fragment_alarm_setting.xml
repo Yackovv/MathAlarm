@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_alarm_setting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".presentation.fragments.AlarmSettingFragment">
+
+    <ImageView
+        android:id="@+id/iv_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="68dp"
+        android:contentDescription="@string/cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cancel" />
+
+    <ImageView
+        android:id="@+id/iv_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:layout_marginEnd="29dp"
+        android:contentDescription="@string/save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/time_round"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:text="00 : 00"
+        android:textColor="@color/for_number_color"
+        android:textSize="59sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_cancel" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        style="@style/StyleAlarmSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tv_monday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:layout_marginTop="35dp"
+            android:text="@string/monday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_tuesday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_tuesday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/tuesday"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_monday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_wednesday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_monday"
+            app:layout_constraintTop_toTopOf="@+id/tv_monday" />
+
+        <TextView
+            android:id="@+id/tv_wednesday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/wednesday"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_tuesday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_thursday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_tuesday"
+            app:layout_constraintTop_toTopOf="@+id/tv_tuesday" />
+
+        <TextView
+            android:id="@+id/tv_thursday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/thursday"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_wednesday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_friday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_wednesday"
+            app:layout_constraintTop_toTopOf="@+id/tv_wednesday" />
+
+        <TextView
+            android:id="@+id/tv_friday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/friday"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_thursday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_saturday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_thursday"
+            app:layout_constraintTop_toTopOf="@+id/tv_thursday" />
+
+        <TextView
+            android:id="@+id/tv_saturday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/saturday"
+            android:textColor="@color/blue_color"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_friday"
+            app:layout_constraintEnd_toStartOf="@+id/tv_sunday"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_friday"
+            app:layout_constraintTop_toTopOf="@+id/tv_friday" />
+
+        <TextView
+            android:id="@+id/tv_sunday"
+            style="@style/DaysOfWeekAlarmSettings"
+            android:text="@string/sunday"
+            android:textColor="@color/blue_color"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_saturday"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_saturday"
+            app:layout_constraintTop_toTopOf="@+id/tv_saturday" />
+
+        <View
+            android:id="@+id/line_1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="12dp"
+            android:background="@color/for_number_color"
+            app:layout_constraintTop_toBottomOf="@+id/tv_monday" />
+
+        <LinearLayout
+            android:id="@+id/ll_level"
+            style="@style/LinearLayoutSettingItem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line_1">
+
+            <TextView
+                android:id="@+id/tv_level_header"
+                style="@style/TextViewItemHeader"
+                android:text="@string/level_alarm_settings" />
+
+            <TextView
+                android:id="@+id/tv_level_description"
+                style="@style/TextviewItemDescription"
+                tools:text="Легкий" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/line_2"
+            style="@style/ViewSlimLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_level" />
+
+        <LinearLayout
+            android:id="@+id/ll_music"
+            style="@style/LinearLayoutSettingItem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line_2">
+
+            <TextView
+                android:id="@+id/tv_music_header"
+                style="@style/TextViewItemHeader"
+                android:text="@string/music" />
+
+            <TextView
+                android:id="@+id/tv_music_description"
+                style="@style/TextviewItemDescription"
+                tools:text="звуки леса" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/line_3"
+            style="@style/ViewSlimLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_music" />
+
+        <TextView
+            android:id="@+id/tv_vibration"
+            style="@style/TextViewItemHeader"
+            android:layout_marginStart="29dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:text="@string/vibration"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line_3" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/alarm_switch"
+            style="@style/SwitchCompat"
+            android:layout_marginEnd="22dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_vibration"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_vibration" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

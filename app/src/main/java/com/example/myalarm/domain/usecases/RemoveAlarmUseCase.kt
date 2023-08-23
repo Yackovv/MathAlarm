@@ -6,7 +6,7 @@ import com.example.myalarm.domain.repository.AlarmRepository
 class RemoveAlarmUseCase(
     private val repository: AlarmRepository
 ) {
-    operator fun invoke(alarm: Alarm) {
+    suspend operator fun invoke(alarm: Alarm) {
         repository.removeAlarm(alarm)
     }
 }
