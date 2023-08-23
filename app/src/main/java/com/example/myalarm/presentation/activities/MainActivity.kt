@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        checkIntent()
         isDialogFirstShow()
         checkPermissions()
 
@@ -42,17 +43,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //TODO Изменить текст и заголовок на нормальные
     private fun showDialogOpenDoNotDisturb(){
         MaterialAlertDialogBuilder(this)
-            .setTitle("Title")
-            .setMessage("Text text Text text Text text Text text Text text")
+            .setTitle("Изменение режима не беспокоить")
+            .setMessage("Предоставте развершение на изменение режима не беспокоить приложению")
             .setNeutralButton("Cancel") { _, _ ->
                 makeIsDialogTrue()
             }
             .setPositiveButton("Accept") { _, _ ->
                 openDoNotDisturbSetting()
                 makeIsDialogTrue()
+            }
+            .setOnCancelListener {
+                finish()
             }
             .show()
     }
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissionsLowApi33() {
         val notificationManager = NotificationManagerCompat.from(this)
         if (!notificationManager.areNotificationsEnabled()) {
-            finish()
+            showDialogTurnOnNotification()
         }
     }
 
@@ -116,9 +119,48 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    private fun showDialogTurnOnNotification(){
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Включить уведомления")
+            .setMessage("Предоставте развершение на показ уведомлений")
+            .setNeutralButton("Cancel") { _, _ ->
+                finish()
+            }
+            .setPositiveButton("Accept") { _, _ ->
+                openNotificationPostSetting()
+            }
+            .setOnCancelListener {
+                finish()
+            }
+            .show()
+    }
+
+    private fun openNotificationPostSetting(){
+        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra("android.provider.extra.APP_PACKAGE", packageName)
+            startActivity(this)
+        }
+    }
+
+    private fun checkIntent(){
+        if(intent.hasExtra(CLOSE_ACTIVITY_EXTRA)) {
+            if(intent.getStringExtra(CLOSE_ACTIVITY_EXTRA) == CLOSE_ACTIVITY){
+                finish()
+            }
+        }
+    }
+
     companion object {
         private const val POST_NOTIFICATION_RC = 110
         private const val SHARED_PREFERENCES_NAME = "DialogShow"
         private const val IS_DIALOG_SHOW = "isDialogShow"
+        private const val CLOSE_ACTIVITY_EXTRA = "close_activity"
+        private const val CLOSE_ACTIVITY = "close"
+
+        fun newIntentMainActivity(context: Context): Intent{
+            return Intent(context, MainActivity::class.java).apply {
+                putExtra(CLOSE_ACTIVITY_EXTRA, CLOSE_ACTIVITY)
+            }
+        }
     }
 }

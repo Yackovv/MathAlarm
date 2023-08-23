@@ -24,7 +24,6 @@ import com.example.myalarm.logg
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
 import com.example.myalarm.services.AlarmWorker
 import com.google.android.material.timepicker.MaterialTimePicker
-import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -213,7 +212,6 @@ class AlarmSettingFragment : Fragment() {
         val minutes = str.substringAfterLast(" ").toInt()
         val picker =
             MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_12H)
                 .setTimeFormat(CLOCK_24H)
                 .setHour(hours)
                 .setMinute(minutes)
@@ -260,7 +258,7 @@ class AlarmSettingFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_RINGTONE_RC && resultCode == Activity.RESULT_OK) {
             uri = data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            if(uri == null){
+            if (uri == null) {
                 setupDefaultRingtoneUri()
                 setupRingtoneTitleToTextView()
             } else {
@@ -275,7 +273,7 @@ class AlarmSettingFragment : Fragment() {
         bind.tvMusicDescription.text = getRingtoneTitle(uri)
     }
 
-    private fun setupDefaultRingtoneUri(){
+    private fun setupDefaultRingtoneUri() {
         uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     }
 

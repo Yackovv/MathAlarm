@@ -12,15 +12,12 @@ import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.Vibrator
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
-import com.example.myalarm.R
 import com.example.myalarm.databinding.ActivityAlarmBinding
 import com.example.myalarm.presentation.AlarmReceiver
 import com.example.myalarm.presentation.viewmodels.AlarmViewModel
@@ -37,16 +34,11 @@ class AlarmActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[AlarmViewModel::class.java]
     }
-    private val colorRed by lazy {
-        ContextCompat.getColor(this, R.color.red_color)
-    }
-    private val colorGrey by lazy {
-        ContextCompat.getColor(this, R.color.setting_background_color)
-    }
     private val vibrator by lazy {
         getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
     private val longArray = longArrayOf(100, 200, 400, 800)
+    private var isSecondOnStop = false
     private var alarmId = UNDEFINED_ID
     private var notificationId = UNDEFINED_ID
     private var isExampleEnd = false
@@ -58,11 +50,28 @@ class AlarmActivity : AppCompatActivity() {
 
         parseIntent()
         setupMaxVolume()
-        setupFlagsForWindow()
         viewModel.getAlarm(alarmId)
         viewModel.generateQuestion()
         cancelNotification()
+        flowCollects()
+        setOnClickListeners()
+    }
 
+    private fun setOnClickListeners() {
+        bind.ivInputAnswer.setOnClickListener {
+            viewModel.checkAnswer(bind.etAnswer.text.toString())
+        }
+
+        bind.ivSpeaker.setOnClickListener {
+            ringtone.stop()
+            viewModel.startTimer()
+            vibrator.cancel()
+            bind.ivSound.visibility = View.GONE
+            bind.ivNoSound.isVisible = true
+        }
+    }
+
+    private fun flowCollects() {
         lifecycleScope.launch {
             viewModel.vibrationFlow.collect {
                 if (it) {
@@ -101,13 +110,13 @@ class AlarmActivity : AppCompatActivity() {
                     if (it) {
                         viewModel.generateQuestion()
                         etAnswer.setText("")
-                        ivInputAnswer.isVisible = true
-                        etAnswer.setBackgroundColor(colorGrey)
                     } else {
-                        etAnswer.setBackgroundColor(colorRed)
                         etAnswer.setText("")
+                        ivInputAnswer.isVisible = false
+                        ivWrongAnswer.isVisible = true
                         delay(1_000)
-                        etAnswer.setBackgroundColor(colorGrey)
+                        ivInputAnswer.isVisible = true
+                        ivWrongAnswer.isVisible = false
                     }
                 }
             }
@@ -121,21 +130,10 @@ class AlarmActivity : AppCompatActivity() {
                     ringtone.stop()
                     vibrator.cancel()
                     setupAlarmOnNextDay()
-                    finishAffinity()
+                    finish()
+                    startActivity(MainActivity.newIntentMainActivity(this@AlarmActivity))
                 }
             }
-        }
-
-        bind.ivInputAnswer.setOnClickListener {
-            viewModel.checkAnswer(bind.etAnswer.text.toString())
-        }
-
-        bind.ivSpeaker.setOnClickListener {
-            ringtone.stop()
-            viewModel.startTimer()
-            vibrator.cancel()
-            bind.ivSound.visibility = View.GONE
-            bind.ivNoSound.isVisible = true
         }
     }
 
@@ -158,7 +156,7 @@ class AlarmActivity : AppCompatActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
         val calendar = Calendar.getInstance()
-        calendar.add(Calendar.SECOND, 30)
+        calendar.add(Calendar.SECOND, ALARM_RESTART_SECONDS)
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
@@ -175,15 +173,6 @@ class AlarmActivity : AppCompatActivity() {
             AudioManager.STREAM_RING,
             maxCallVolume,
             AudioManager.FLAG_SHOW_UI
-        )
-    }
-
-    private fun setupFlagsForWindow() {
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         )
     }
 
@@ -214,17 +203,19 @@ class AlarmActivity : AppCompatActivity() {
         notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, UNDEFINED_ID)
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (!isExampleEnd) {
+    override fun onStop() {
+        super.onStop()
+        if (!isExampleEnd && isSecondOnStop) {
             restartAlarm()
         }
+        isSecondOnStop = true
     }
 
     companion object {
 
         private const val EXTRA_ALARM_ID = "alarm_id"
         private const val UNDEFINED_ID = 0
+        private const val ALARM_RESTART_SECONDS = 60
         private const val EXTRA_NOTIFICATION_ID = "notification_id"
 
         fun newIntentAlarmActivity(context: Context, alarmId: Int, notificationId: Int): Intent {

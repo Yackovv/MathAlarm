@@ -5,23 +5,55 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.AUDIO_SERVICE
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.media.AudioManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.example.myalarm.R
+import com.example.myalarm.logg
 import com.example.myalarm.presentation.activities.AlarmActivity
+import com.example.myalarm.services.AlarmWorker
 
 class AlarmReceiver : BroadcastReceiver() {
 
     private var alarmId = UNDEFINED_ID
 
     override fun onReceive(context: Context, intent: Intent) {
-
+        logg("onReceive")
         parseIntent(intent)
 
         val notificationManager =
-            context.getSystemService(NotificationManager::class.java) as NotificationManager
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
 
+        if (audioManager.ringerMode == AudioManager.RINGER_MODE_SILENT) {
+            if (notificationManager.isNotificationPolicyAccessGranted) {
+                createNotification(notificationManager, context)
+            } else {
+                setupAlarmOnNextDay(context)
+            }
+        } else {
+            createNotification(notificationManager, context)
+        }
+    }
+
+    private fun setupAlarmOnNextDay(context: Context) {
+        val workManager = WorkManager.getInstance(context)
+        workManager.enqueueUniqueWork(
+            AlarmWorker.WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            AlarmWorker.makeRequest(alarmId)
+        )
+    }
+
+    private fun createNotification(
+        notificationManager: NotificationManager,
+        context: Context
+    ) {
         createNotificationChannel(notificationManager)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
