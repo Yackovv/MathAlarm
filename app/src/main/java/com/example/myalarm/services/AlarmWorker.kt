@@ -1,16 +1,15 @@
 package com.example.myalarm.services
 
 import android.app.AlarmManager
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
+import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
 import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
@@ -18,14 +17,24 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
 class AlarmWorker(
     private val context: Context,
-    private val workerParameters: WorkerParameters
+    private val workerParameters: WorkerParameters,
+    private val getAlarmUseCase: GetAlarmUseCase
 ) : Worker(context, workerParameters) {
 
-    private val repository = AlarmRepositoryImpl(applicationContext as Application)
-    private val getAlarmUseCase = GetAlarmUseCase(repository)
+    class Factory @Inject constructor(
+        private val getAlarmUseCase: GetAlarmUseCase
+    ) : ChildWorkerFactory {
+        override fun create(
+            context: Context,
+            workerParameters: WorkerParameters
+        ): ListenableWorker {
+            return AlarmWorker(context, workerParameters, getAlarmUseCase)
+        }
+    }
 
     override fun doWork(): Result {
 

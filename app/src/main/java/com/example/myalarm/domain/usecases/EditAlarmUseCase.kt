@@ -2,8 +2,9 @@ package com.example.myalarm.domain.usecases
 
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.repository.AlarmRepository
+import javax.inject.Inject
 
-class EditAlarmUseCase(
+class EditAlarmUseCase @Inject constructor(
     private val repository: AlarmRepository
 ) {
 

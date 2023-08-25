@@ -1,9 +1,7 @@
 package com.example.myalarm.presentation.viewmodels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
@@ -13,24 +11,24 @@ import com.example.myalarm.domain.usecases.GetAlarmUseCase
 import com.example.myalarm.logg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlarmSettingViewModel(private val application: Application) : AndroidViewModel(application) {
+class AlarmSettingViewModel @Inject constructor(
+    private val editAlarmUseCase: EditAlarmUseCase,
+    private val generateQuestionUseCase: GenerateQuestionUseCase,
+    private val getAlarmUseCase: GetAlarmUseCase
+) : ViewModel() {
 
-    private val repository = AlarmRepositoryImpl(application)
-
-    private val editAlarmUseCase = EditAlarmUseCase(repository)
-    private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-    private val getAlarmUseCase = GetAlarmUseCase(repository)
-
-    val alarmFlow = MutableStateFlow(Alarm())
+    private lateinit var newAlarm: Alarm
+    val alarmFlow = MutableSharedFlow<Alarm>()
     val questionFlow = MutableSharedFlow<Question>(replay = 1)
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
             val alarm = getAlarmUseCase.invoke(alarmId)
-            alarmFlow.value = alarm
+            alarmFlow.emit(alarm)
+            newAlarm = alarm
         }
     }
 
@@ -44,7 +42,7 @@ class AlarmSettingViewModel(private val application: Application) : AndroidViewM
 
     fun setupLevelAndCountOfQuestion(level: Level, countQuestion: Int) {
         viewModelScope.launch(Dispatchers.Unconfined) {
-            val changedAlarm = alarmFlow.value.copy(level = level, countQuestion = countQuestion)
+            val changedAlarm = newAlarm.copy(level = level, countQuestion = countQuestion)
             editAlarmUseCase.invoke(changedAlarm)
             logg("From AlarmSettingViewModel")
             logg("alarmId = ${changedAlarm.id}, level = $level, count question = $countQuestion")
@@ -65,7 +63,7 @@ class AlarmSettingViewModel(private val application: Application) : AndroidViewM
         saturday: Boolean = false,
         sunday: Boolean = false
     ) {
-        val changedAlarm = alarmFlow.value.copy(
+        val changedAlarm = newAlarm.copy(
             enabled = true,
             alarmTime = alarmTime,
             level = level,

@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
     <application
+        android:name=".presentation.AlarmApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -41,6 +42,12 @@
         </activity>
         <receiver android:name=".presentation.AlarmReceiver"
             android:exported="false"/>
+        <provider
+            android:authorities="androidx.work.WorkManagerInitializer"
+            android:name="androidx.startup.InitializationProvider"
+            tools:replace="android:authorities"
+            tools:node="remove"
+            />
     </application>
 
 </manifest>

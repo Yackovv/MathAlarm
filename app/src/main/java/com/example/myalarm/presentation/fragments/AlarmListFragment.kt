@@ -1,5 +1,6 @@
 package com.example.myalarm.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
 import com.example.myalarm.logg
+import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.AlarmListAdapter
 import com.example.myalarm.presentation.viewmodels.AlarmListViewModel
+import com.example.myalarm.presentation.viewmodels.ViewModelFactory
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AlarmListFragment : Fragment() {
 
@@ -21,13 +25,24 @@ class AlarmListFragment : Fragment() {
     private val bind
         get() = _bind ?: throw RuntimeException("FragmentAlarmListBinding == null")
 
-    private lateinit var alarmListAdapter: AlarmListAdapter
+    private val alarmListAdapter by lazy {
+        AlarmListAdapter()
+    }
+    @Inject
+    lateinit var factory : ViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmListViewModel::class.java]
+        ViewModelProvider(this, factory)[AlarmListViewModel::class.java]
     }
-
+    private val component by lazy {
+        (requireActivity().application as AlarmApplication).component
+    }
     private lateinit var job: Job
+
+    override fun onAttach(context: Context) {
+        component.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +55,6 @@ class AlarmListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        alarmListAdapter = AlarmListAdapter()
 
         bind.rvAlarmList.adapter = alarmListAdapter
 

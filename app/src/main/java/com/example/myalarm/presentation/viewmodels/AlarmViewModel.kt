@@ -1,26 +1,24 @@
 package com.example.myalarm.presentation.viewmodels
 
-import android.app.Application
 import android.net.Uri
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.core.net.toUri
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.data.AlarmRepositoryImpl
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
 import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
 import com.example.myalarm.domain.usecases.GetAlarmUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlarmViewModel(application: Application) : AndroidViewModel(application) {
+class AlarmViewModel @Inject constructor(
+    private val generateQuestionUseCase: GenerateQuestionUseCase,
+    private val getAlarmUseCase: GetAlarmUseCase
+) : ViewModel() {
 
-    private val repository = AlarmRepositoryImpl(application)
-
-    private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
-    private val getAlarmUseCase = GetAlarmUseCase(repository)
 
     private var level = Level.EASY
     private var rightAnswer: Int = 0

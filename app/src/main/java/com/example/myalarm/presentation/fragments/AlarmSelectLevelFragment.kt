@@ -1,5 +1,6 @@
 package com.example.myalarm.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +13,11 @@ import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.logg
+import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
+import com.example.myalarm.presentation.viewmodels.ViewModelFactory
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AlarmSelectLevelFragment : Fragment() {
 
@@ -21,15 +25,23 @@ class AlarmSelectLevelFragment : Fragment() {
     private val bind
         get() = _bind ?: throw RuntimeException("FragmentChoiceLevelBinding == null")
 
+    @Inject
+    lateinit var factory: ViewModelFactory
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmSettingViewModel::class.java]
+        ViewModelProvider(this, factory)[AlarmSettingViewModel::class.java]
     }
-
-
     private var selectedLevel = Level.EASY
     private var alarmId = UNDEFINED_ID
     private val colorBlue by lazy {
         ContextCompat.getColor(requireContext(), R.color.blue_color)
+    }
+    private val component by lazy {
+        (requireActivity().application as AlarmApplication).component
+    }
+
+    override fun onAttach(context: Context) {
+        component.inject(this)
+        super.onAttach(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

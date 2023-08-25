@@ -1,6 +1,5 @@
 package com.example.myalarm.data
 
-import android.app.Application
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.domain.enteties.Question
@@ -8,11 +7,12 @@ import com.example.myalarm.domain.enteties.QuestionSetting
 import com.example.myalarm.domain.repository.AlarmRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 import kotlin.random.Random
 
-class AlarmRepositoryImpl(application: Application) : AlarmRepository {
-
-    private val alarmDao = AppDatabase.getInstance(application).alarmDao()
+class AlarmRepositoryImpl @Inject constructor(
+    private val alarmDao: AlarmDao
+) : AlarmRepository {
 
     private val actionExample1 = listOf("+", "-", "*", "/")
     private val actionExample2 = listOf("+", "-")
