@@ -28,8 +28,9 @@ class AlarmListFragment : Fragment() {
     private val alarmListAdapter by lazy {
         AlarmListAdapter()
     }
+
     @Inject
-    lateinit var factory : ViewModelFactory
+    lateinit var factory: ViewModelFactory
 
     private val viewModel by lazy {
         ViewModelProvider(this, factory)[AlarmListViewModel::class.java]

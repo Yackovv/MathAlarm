@@ -1,4 +1,4 @@
-package com.example.myalarm.domain.enteties
+package com.example.domain.domain.enteties
 
 data class QuestionSetting (
     val maxValueNum1: Int,

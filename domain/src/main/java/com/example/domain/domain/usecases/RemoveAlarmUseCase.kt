@@ -1,7 +1,7 @@
-package com.example.myalarm.domain.usecases
+package com.example.domain.domain.usecases
 
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.repository.AlarmRepository
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.repository.AlarmRepository
 import javax.inject.Inject
 
 class RemoveAlarmUseCase @Inject constructor(

@@ -1,6 +1,6 @@
-package com.example.myalarm.data
+package com.example.data.data
 
-import com.example.myalarm.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Alarm
 
 object AlarmMapper {
 

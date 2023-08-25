@@ -1,4 +1,4 @@
-package com.example.myalarm.data
+package com.example.data.data
 
 import androidx.room.Dao
 import androidx.room.Insert

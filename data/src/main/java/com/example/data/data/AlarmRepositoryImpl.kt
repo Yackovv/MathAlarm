@@ -1,10 +1,10 @@
-package com.example.myalarm.data
+package com.example.data.data
 
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.enteties.QuestionSetting
-import com.example.myalarm.domain.repository.AlarmRepository
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.enteties.QuestionSetting
+import com.example.domain.domain.repository.AlarmRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

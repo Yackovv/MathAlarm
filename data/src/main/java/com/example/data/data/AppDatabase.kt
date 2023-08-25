@@ -1,4 +1,4 @@
-package com.example.myalarm.data
+package com.example.data.data
 
 import android.app.Application
 import androidx.room.Database
@@ -16,7 +16,7 @@ abstract class AppDatabase : RoomDatabase() {
         private val LOCK = Any()
         private const val NAME_DB = "alarms.db"
 
-        fun getInstance(application: Application): AppDatabase{
+        fun getInstance(application: Application): AppDatabase {
 
             database?.let {
                 return it

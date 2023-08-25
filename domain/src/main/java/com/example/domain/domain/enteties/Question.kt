@@ -1,4 +1,4 @@
-package com.example.myalarm.domain.enteties
+package com.example.domain.domain.enteties
 
 data class Question(
     val num1: Int,

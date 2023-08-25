@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
+import com.example.domain.domain.enteties.Alarm
 import com.example.myalarm.R
 import com.example.myalarm.databinding.ItemAlarmBinding
-import com.example.myalarm.domain.enteties.Alarm
 
 class AlarmListAdapter : ListAdapter<Alarm, AlarmViewHolder>(AlarmDiffCallback()) {
 
@@ -37,11 +37,19 @@ class AlarmListAdapter : ListAdapter<Alarm, AlarmViewHolder>(AlarmDiffCallback()
 
         with(bind) {
             if (alarm.monday) tvMonday.setTextColor(blueColor) else tvMonday.setTextColor(whiteColor)
-            if (alarm.tuesday) tvTuesday.setTextColor(blueColor) else tvTuesday.setTextColor(whiteColor)
-            if (alarm.wednesday) tvWednesday.setTextColor(blueColor) else tvWednesday.setTextColor(whiteColor)
-            if (alarm.thursday) tvThursday.setTextColor(blueColor) else tvThursday.setTextColor(whiteColor)
+            if (alarm.tuesday) tvTuesday.setTextColor(blueColor) else tvTuesday.setTextColor(
+                whiteColor
+            )
+            if (alarm.wednesday) tvWednesday.setTextColor(blueColor) else tvWednesday.setTextColor(
+                whiteColor
+            )
+            if (alarm.thursday) tvThursday.setTextColor(blueColor) else tvThursday.setTextColor(
+                whiteColor
+            )
             if (alarm.friday) tvFriday.setTextColor(blueColor) else tvFriday.setTextColor(whiteColor)
-            if (alarm.saturday) tvSaturday.setTextColor(blueColor) else tvSaturday.setTextColor(whiteColor)
+            if (alarm.saturday) tvSaturday.setTextColor(blueColor) else tvSaturday.setTextColor(
+                whiteColor
+            )
             if (alarm.sunday) tvSunday.setTextColor(blueColor) else tvSunday.setTextColor(whiteColor)
         }
 

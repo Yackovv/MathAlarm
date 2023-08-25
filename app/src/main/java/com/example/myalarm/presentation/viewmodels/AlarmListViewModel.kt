@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.usecases.AddAlarmUseCase
-import com.example.myalarm.domain.usecases.EditAlarmUseCase
-import com.example.myalarm.domain.usecases.GetAlarmListUseCase
-import com.example.myalarm.domain.usecases.RemoveAlarmUseCase
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.usecases.AddAlarmUseCase
+import com.example.domain.domain.usecases.EditAlarmUseCase
+import com.example.domain.domain.usecases.GetAlarmListUseCase
+import com.example.domain.domain.usecases.RemoveAlarmUseCase
 import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
 import com.example.myalarm.services.AlarmWorker

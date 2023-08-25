@@ -6,10 +6,10 @@ import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
-import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.usecases.GenerateQuestionUseCase
+import com.example.domain.domain.usecases.GetAlarmUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

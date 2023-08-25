@@ -1,9 +1,9 @@
-package com.example.myalarm.domain.repository
+package com.example.domain.domain.repository
 
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.enteties.QuestionSetting
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.enteties.QuestionSetting
 import kotlinx.coroutines.flow.Flow
 
 interface AlarmRepository {

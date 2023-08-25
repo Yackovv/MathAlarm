@@ -1,8 +1,9 @@
-package com.example.myalarm.data
+package com.example.data.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.myalarm.domain.enteties.Level
+import com.example.domain.domain.enteties.Level
+
 
 @Entity(tableName = "alarms")
 data class AlarmDbModel(

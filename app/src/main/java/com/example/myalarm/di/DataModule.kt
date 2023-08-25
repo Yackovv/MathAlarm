@@ -1,10 +1,8 @@
 package com.example.myalarm.di
 
 import android.app.Application
-import com.example.myalarm.data.AlarmDao
-import com.example.myalarm.data.AlarmRepositoryImpl
-import com.example.myalarm.data.AppDatabase
-import com.example.myalarm.domain.repository.AlarmRepository
+import com.example.data.data.AlarmRepositoryImpl
+import com.example.domain.domain.repository.AlarmRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,8 +21,8 @@ interface DataModule {
 
         @Provides
         @ApplicationScope
-        fun provideAlarmDao(application: Application): AlarmDao {
-            return AppDatabase.getInstance(application).alarmDao()
+        fun provideAlarmDao(application: Application): com.example.data.data.AlarmDao {
+            return com.example.data.data.AppDatabase.getInstance(application).alarmDao()
         }
     }
 }

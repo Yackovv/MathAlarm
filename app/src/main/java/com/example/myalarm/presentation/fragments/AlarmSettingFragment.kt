@@ -17,10 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Level
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel

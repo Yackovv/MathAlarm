@@ -2,12 +2,12 @@ package com.example.myalarm.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.usecases.EditAlarmUseCase
-import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
-import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.usecases.EditAlarmUseCase
+import com.example.domain.domain.usecases.GenerateQuestionUseCase
+import com.example.domain.domain.usecases.GetAlarmUseCase
 import com.example.myalarm.logg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

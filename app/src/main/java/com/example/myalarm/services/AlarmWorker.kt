@@ -10,7 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.domain.domain.usecases.GetAlarmUseCase
 import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
 import kotlinx.coroutines.CoroutineScope
