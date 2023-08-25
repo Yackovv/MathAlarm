@@ -1,6 +1,7 @@
 package com.example.myalarm.presentation.fragments
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
@@ -21,12 +22,15 @@ import com.example.myalarm.databinding.FragmentAlarmSettingBinding
 import com.example.myalarm.domain.enteties.Alarm
 import com.example.myalarm.domain.enteties.Level
 import com.example.myalarm.logg
+import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
+import com.example.myalarm.presentation.viewmodels.ViewModelFactory
 import com.example.myalarm.services.AlarmWorker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat.CLOCK_24H
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AlarmSettingFragment : Fragment() {
 
@@ -37,17 +41,26 @@ class AlarmSettingFragment : Fragment() {
     private var alarmId = UNDEFINED_ID
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmSettingViewModel::class.java]
+        ViewModelProvider(this, factory)[AlarmSettingViewModel::class.java]
     }
-
     private val backgroundCircle by lazy {
         ContextCompat.getDrawable(requireContext(), R.drawable.circle_day)
     }
+    private val component by lazy {
+        (requireActivity().application as AlarmApplication).component
+    }
+
+    @Inject
+    lateinit var factory: ViewModelFactory
 
     private var uri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-
     private var countOfQuestion = 1
     private lateinit var jobAlarm: Job
+
+    override fun onAttach(context: Context) {
+        component.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +80,7 @@ class AlarmSettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.getAlarm(alarmId)
         logg("${this@AlarmSettingFragment}")
 
         setupClickListeners()
@@ -74,11 +88,10 @@ class AlarmSettingFragment : Fragment() {
     }
 
     private fun launchModeEdit() {
-        viewModel.getAlarm(alarmId)
         jobAlarm = lifecycleScope.launch {
             viewModel.alarmFlow.collect {
 
-                logg("collect modeEdit")
+                logg("${it.monday} ${it.tuesday} ${it.wednesday} ${it.thursday} ${it.friday} ${it.saturday} ${it.sunday}")
 
                 bind.tvTime.text = it.alarmTime
                 countOfQuestion = it.countQuestion

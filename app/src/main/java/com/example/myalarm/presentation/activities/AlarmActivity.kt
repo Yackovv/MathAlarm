@@ -19,12 +19,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.example.myalarm.databinding.ActivityAlarmBinding
+import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.AlarmReceiver
 import com.example.myalarm.presentation.viewmodels.AlarmViewModel
+import com.example.myalarm.presentation.viewmodels.ViewModelFactory
 import com.example.myalarm.services.AlarmWorker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
 class AlarmActivity : AppCompatActivity() {
 
@@ -32,11 +35,17 @@ class AlarmActivity : AppCompatActivity() {
         ActivityAlarmBinding.inflate(layoutInflater)
     }
     private val viewModel by lazy {
-        ViewModelProvider(this)[AlarmViewModel::class.java]
+        ViewModelProvider(this, factory)[AlarmViewModel::class.java]
     }
     private val vibrator by lazy {
         getSystemService(VIBRATOR_SERVICE) as Vibrator
     }
+    private val component by lazy {
+        (application as AlarmApplication).component
+    }
+
+    @Inject
+    lateinit var factory: ViewModelFactory
     private val longArray = longArrayOf(100, 200, 400, 800)
     private var isSecondOnStop = false
     private var alarmId = UNDEFINED_ID
@@ -45,6 +54,7 @@ class AlarmActivity : AppCompatActivity() {
     private lateinit var ringtone: Ringtone
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(bind.root)
 
