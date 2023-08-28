@@ -10,10 +10,8 @@ import com.example.myalarm.databinding.ItemAlarmBinding
 
 class AlarmListAdapter : ListAdapter<Alarm, AlarmViewHolder>(AlarmDiffCallback()) {
 
-    var onLongClickListener: ((Alarm) -> Unit)? = null
     var onClickListener: ((Alarm) -> Unit)? = null
     var onSwitchCompatListener: ((Alarm, Boolean) -> Unit)? = null
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlarmViewHolder {
 
@@ -52,21 +50,14 @@ class AlarmListAdapter : ListAdapter<Alarm, AlarmViewHolder>(AlarmDiffCallback()
             )
             if (alarm.sunday) tvSunday.setTextColor(blueColor) else tvSunday.setTextColor(whiteColor)
         }
-
-
+        
         holder.itemView.setOnClickListener {
             onClickListener?.invoke(alarm)
-        }
-
-        holder.itemView.setOnLongClickListener {
-            onLongClickListener?.invoke(alarm)
-            true
         }
 
         bind.alarmSwitch.setOnClickListener {
             val isEnabled = holder.bind.alarmSwitch.isChecked
             onSwitchCompatListener?.invoke(alarm, isEnabled)
         }
-
     }
 }
