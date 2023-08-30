@@ -8,7 +8,6 @@ import com.example.domain.domain.enteties.Question
 import com.example.domain.domain.usecases.EditAlarmUseCase
 import com.example.domain.domain.usecases.GenerateQuestionUseCase
 import com.example.domain.domain.usecases.GetAlarmUseCase
-import com.example.myalarm.logg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -44,8 +43,6 @@ class AlarmSettingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Unconfined) {
             val changedAlarm = newAlarm.copy(level = level, countQuestion = countQuestion)
             editAlarmUseCase.invoke(changedAlarm)
-            logg("From AlarmSettingViewModel")
-            logg("alarmId = ${changedAlarm.id}, level = $level, count question = $countQuestion")
         }
     }
 

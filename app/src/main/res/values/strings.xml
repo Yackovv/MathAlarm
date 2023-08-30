@@ -18,4 +18,9 @@
     <string name="level_hard">Сложный</string>
     <string name="level_pro">Продвинутый</string>
     <string name="vibration">Вибрация</string>
+    <string name="notification_text">Нажмите для отключения будильника</string>
+    <string name="title_change_do_not_disturb">Изменение режима не беспокоить</string>
+    <string name="message_change_do_not_disturb">Предоставте развершение на изменение режима не беспокоить приложению.</string>
+    <string name="dialog_fragment_cancel">отмена</string>
+    <string name="dialog_fragment_accept">ок</string>
 </resources>

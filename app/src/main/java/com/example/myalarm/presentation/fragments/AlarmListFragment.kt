@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.AlarmListAdapter
 import com.example.myalarm.presentation.viewmodels.AlarmListViewModel
@@ -119,7 +118,6 @@ class AlarmListFragment : Fragment() {
 
         job = lifecycleScope.launch {
             viewModel.newAlarmId.collect {
-                logg("AlarmListFragment call collect $it")
                 requireActivity().supportFragmentManager.beginTransaction()
                     .addToBackStack(null)
                     .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it))

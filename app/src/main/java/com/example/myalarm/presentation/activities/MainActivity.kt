@@ -11,15 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.myalarm.R
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.fragments.AlarmListFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
 
-    private val preferences by lazy{
+    private val preferences by lazy {
         getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,22 +35,22 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun isDialogFirstShow(){
+    private fun isDialogFirstShow() {
         val isDialogShow = preferences.getBoolean(IS_DIALOG_SHOW, false)
 
-        if(!isDialogShow){
+        if (!isDialogShow) {
             showDialogOpenDoNotDisturb()
         }
     }
 
-    private fun showDialogOpenDoNotDisturb(){
+    private fun showDialogOpenDoNotDisturb() {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Изменение режима не беспокоить")
-            .setMessage("Предоставте развершение на изменение режима не беспокоить приложению")
-            .setNeutralButton("Cancel") { _, _ ->
+            .setTitle(getString(R.string.title_change_do_not_disturb))
+            .setMessage(getString(R.string.message_change_do_not_disturb))
+            .setNeutralButton(getString(R.string.dialog_fragment_cancel)) { _, _ ->
                 makeIsDialogTrue()
             }
-            .setPositiveButton("Accept") { _, _ ->
+            .setPositiveButton(getString(R.string.dialog_fragment_accept)) { _, _ ->
                 openDoNotDisturbSetting()
                 makeIsDialogTrue()
             }
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun openDoNotDisturbSetting(){
+    private fun openDoNotDisturbSetting() {
         startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
     }
 
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity() {
             this,
             android.Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_DENIED
-        logg("$permissionDenied")
         if (permissionDenied) {
             requestPermission()
         }
@@ -119,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun showDialogTurnOnNotification(){
+    private fun showDialogTurnOnNotification() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Включить уведомления")
             .setMessage("Предоставте развершение на показ уведомлений")
@@ -135,16 +134,16 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun openNotificationPostSetting(){
+    private fun openNotificationPostSetting() {
         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
             putExtra("android.provider.extra.APP_PACKAGE", packageName)
             startActivity(this)
         }
     }
 
-    private fun checkIntent(){
-        if(intent.hasExtra(CLOSE_ACTIVITY_EXTRA)) {
-            if(intent.getStringExtra(CLOSE_ACTIVITY_EXTRA) == CLOSE_ACTIVITY){
+    private fun checkIntent() {
+        if (intent.hasExtra(CLOSE_ACTIVITY_EXTRA)) {
+            if (intent.getStringExtra(CLOSE_ACTIVITY_EXTRA) == CLOSE_ACTIVITY) {
                 finish()
             }
         }
@@ -156,11 +155,5 @@ class MainActivity : AppCompatActivity() {
         private const val IS_DIALOG_SHOW = "isDialogShow"
         private const val CLOSE_ACTIVITY_EXTRA = "close_activity"
         private const val CLOSE_ACTIVITY = "close"
-
-        fun newIntentMainActivity(context: Context): Intent{
-            return Intent(context, MainActivity::class.java).apply {
-                putExtra(CLOSE_ACTIVITY_EXTRA, CLOSE_ACTIVITY)
-            }
-        }
     }
 }

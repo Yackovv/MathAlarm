@@ -12,7 +12,6 @@ import com.example.domain.domain.usecases.AddAlarmUseCase
 import com.example.domain.domain.usecases.EditAlarmUseCase
 import com.example.domain.domain.usecases.GetAlarmListUseCase
 import com.example.domain.domain.usecases.RemoveAlarmUseCase
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmReceiver
 import com.example.myalarm.services.AlarmWorker
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,7 +36,6 @@ class AlarmListViewModel @Inject constructor(
 
     fun addAlarm() {
         viewModelScope.launch {
-            logg("AlarmListViewModel call emit")
             newAlarmId.emit(addAlarmUseCase.invoke(Alarm()).toInt())
         }
     }
@@ -59,8 +57,6 @@ class AlarmListViewModel @Inject constructor(
     }
 
     fun turnOffAlarm(context: Context, alarmId: Int) {
-        logg("отмена pendingIntent")
-        logg("alarm ID на AlarmListFragment: $alarmId")
         val cancelIntent = AlarmReceiver.newIntentAlarmReceiver(context, alarmId)
         val cancelPendingIntent = PendingIntent.getBroadcast(
             context,

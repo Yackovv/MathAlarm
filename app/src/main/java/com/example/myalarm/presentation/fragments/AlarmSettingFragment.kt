@@ -22,7 +22,6 @@ import com.example.domain.domain.enteties.Alarm
 import com.example.domain.domain.enteties.Level
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
 import com.example.myalarm.presentation.viewmodels.ViewModelFactory
@@ -63,6 +62,7 @@ class AlarmSettingFragment : Fragment() {
         super.onAttach(context)
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseArguments()
@@ -73,7 +73,6 @@ class AlarmSettingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        logg("onCreateView")
         _bind = FragmentAlarmSettingBinding.inflate(inflater, container, false)
         return bind.root
     }
@@ -82,7 +81,6 @@ class AlarmSettingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getAlarm(alarmId)
-        logg("${this@AlarmSettingFragment}")
 
         setupClickListeners()
         launchModeEdit()
@@ -91,8 +89,6 @@ class AlarmSettingFragment : Fragment() {
     private fun launchModeEdit() {
         jobAlarm = lifecycleScope.launch {
             viewModel.alarmFlow.collect {
-
-                logg("${it.monday} ${it.tuesday} ${it.wednesday} ${it.thursday} ${it.friday} ${it.saturday} ${it.sunday}")
 
                 bind.tvTime.text = it.alarmTime
                 countOfQuestion = it.countQuestion
