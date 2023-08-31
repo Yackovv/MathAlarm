@@ -16,7 +16,7 @@ import javax.inject.Inject
 class AlarmSettingViewModel @Inject constructor(
     private val editAlarmUseCase: EditAlarmUseCase,
     private val generateQuestionUseCase: GenerateQuestionUseCase,
-    private val getAlarmUseCase: GetAlarmUseCase
+    private val getAlarmUseCase: GetAlarmUseCase,
 ) : ViewModel() {
 
     private lateinit var newAlarm: Alarm

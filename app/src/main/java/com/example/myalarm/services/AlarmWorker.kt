@@ -59,7 +59,6 @@ class AlarmWorker(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
 
-
         val calendar = Calendar.getInstance()
         val currentTime = calendar.timeInMillis
 

@@ -14,7 +14,7 @@ class AlarmRepositoryImpl @Inject constructor(
     private val alarmDao: AlarmDao
 ) : AlarmRepository {
 
-    private val actionExample1 = listOf("+", "-", "*", "/")
+    private val actionExample1 = listOf("*", "/")
     private val actionExample2 = listOf("+", "-")
 
     override fun getAlarmList(): Flow<List<Alarm>> {
@@ -27,8 +27,8 @@ class AlarmRepositoryImpl @Inject constructor(
         return alarmDao.addAlarm(AlarmMapper.mapEntityToDbModel(alarm))
     }
 
-    override suspend fun removeAlarm(alarm: Alarm) {
-        alarmDao.removeAlarm(alarm.id)
+    override suspend fun removeAlarm(alarmId: Int) {
+        alarmDao.removeAlarm(alarmId)
     }
 
     override suspend fun editAlarm(alarm: Alarm) {

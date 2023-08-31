@@ -61,9 +61,11 @@ class AlarmSelectLevelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getAlarm(alarmId)
-
         setupClickListeners()
+        flowCollects()
+    }
 
+    private fun flowCollects() {
         lifecycleScope.launch {
             viewModel.questionFlow.collect {
                 bind.tvExample.text = it.example

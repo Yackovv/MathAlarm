@@ -18,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
-import com.example.domain.domain.enteties.Alarm
 import com.example.domain.domain.enteties.Level
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmSettingBinding
@@ -46,6 +45,8 @@ class AlarmSettingFragment : Fragment() {
     private val backgroundCircle by lazy {
         ContextCompat.getDrawable(requireContext(), R.drawable.circle_day)
     }
+    private lateinit var listWeekDays: List<TextView>
+
     private val component by lazy {
         (requireActivity().application as AlarmApplication).component
     }
@@ -80,21 +81,34 @@ class AlarmSettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        createListTextViewWeekDays()
         viewModel.getAlarm(alarmId)
-
         setupClickListeners()
         launchModeEdit()
+    }
+
+    private fun createListTextViewWeekDays() {
+        with(bind) {
+            listWeekDays = mutableListOf(
+                tvSunday,
+                tvMonday,
+                tvTuesday,
+                tvWednesday,
+                tvThursday,
+                tvFriday,
+                tvSaturday
+            ).toList()
+        }
     }
 
     private fun launchModeEdit() {
         jobAlarm = lifecycleScope.launch {
             viewModel.alarmFlow.collect {
-
                 bind.tvTime.text = it.alarmTime
                 countOfQuestion = it.countQuestion
                 uri = it.ringtoneUriString.toUri()
                 setupRingtoneTitleToTextView()
-                checkActiveDay(it)
+                checkActiveDay(it.getActiveDay())
                 setupLevelOnTextView(it.level)
                 bind.alarmSwitch.isChecked = it.vibration
             }
@@ -143,14 +157,10 @@ class AlarmSettingFragment : Fragment() {
         return day.background.constantState == backgroundCircle?.constantState
     }
 
-    private fun checkActiveDay(alarm: Alarm) {
-        if (alarm.monday) bind.tvMonday.background = backgroundCircle
-        if (alarm.tuesday) bind.tvTuesday.background = backgroundCircle
-        if (alarm.wednesday) bind.tvWednesday.background = backgroundCircle
-        if (alarm.thursday) bind.tvThursday.background = backgroundCircle
-        if (alarm.friday) bind.tvFriday.background = backgroundCircle
-        if (alarm.saturday) bind.tvSaturday.background = backgroundCircle
-        if (alarm.sunday) bind.tvSunday.background = backgroundCircle
+    private fun checkActiveDay(activeDays: List<Int>) {
+        for (i in activeDays) {
+            listWeekDays[i - 1].background = backgroundCircle
+        }
     }
 
     private fun setActiveDay(day: TextView) {
@@ -201,8 +211,7 @@ class AlarmSettingFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.main_container, fragment)
-                .setReorderingAllowed(true)
-                .addToBackStack("setting")
+                .addToBackStack(null)
                 .commit()
 
         }
@@ -246,6 +255,7 @@ class AlarmSettingFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         jobAlarm.cancel()
+        _bind = null
     }
 
     private fun parseArguments() {
@@ -261,7 +271,10 @@ class AlarmSettingFragment : Fragment() {
     private fun openRingtonePicker() {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
         intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Выберите мелодию для будильника")
+        intent.putExtra(
+            RingtoneManager.EXTRA_RINGTONE_TITLE,
+            getString(R.string.select_ringtone_for_alarm)
+        )
         startActivityForResult(intent, PICK_RINGTONE_RC)
     }
 

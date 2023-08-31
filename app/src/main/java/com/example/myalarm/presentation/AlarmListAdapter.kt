@@ -23,7 +23,6 @@ class AlarmListAdapter : ListAdapter<Alarm, AlarmViewHolder>(AlarmDiffCallback()
         return AlarmViewHolder(bind)
     }
 
-
     override fun onBindViewHolder(holder: AlarmViewHolder, position: Int) {
         val alarm = getItem(position)
         val bind = holder.bind

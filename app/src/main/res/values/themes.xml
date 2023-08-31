@@ -1,17 +1,17 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.MyAlarm" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-            <item name="colorPrimary">@color/background_color</item>
-            <item name="colorPrimaryVariant">@color/background_color</item>
-            <item name="colorOnPrimary">@color/for_number_color</item>
-            <!-- Secondary brand color. -->
-            <item name="colorSecondary">@color/background_color</item>
-            <item name="colorSecondaryVariant">@color/background_color</item>
-            <item name="colorOnSecondary">@color/background_color</item>
-            <!-- Status bar color. -->
-            <item name="android:statusBarColor" >@color/background_color</item>
-            <item name="android:navigationBarColor" >@color/background_color</item>
-            <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/blue_color</item>
+        <item name="colorPrimaryVariant">@color/background_color</item>
+        <item name="colorOnPrimary">@color/for_number_color</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/setting_background_color</item>
+        <item name="colorSecondaryVariant">@color/background_color</item>
+        <item name="colorOnSecondary">@color/blue_color</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/background_color</item>
+        <item name="android:navigationBarColor">@color/background_color</item>
+        <!-- Customize your theme here. -->
     </style>
 </resources>

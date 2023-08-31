@@ -74,7 +74,6 @@ class AlarmReceiver : BroadcastReceiver() {
             )
             notificationManager.createNotificationChannel(notificationChannel)
         }
-
     }
 
     private fun getPendingIntent(context: Context): PendingIntent {

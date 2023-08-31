@@ -60,6 +60,7 @@ class AlarmListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind.rvAlarmList.adapter = alarmListAdapter
+        bind.rvAlarmList.itemAnimator = null
         flowCollects()
         setupClickListeners()
         setupSwipeListener()
@@ -78,7 +79,7 @@ class AlarmListFragment : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val alarm = alarmListAdapter.currentList[viewHolder.adapterPosition]
-                viewModel.removeAlarm(alarm)
+                viewModel.removeAlarm(alarm.id)
                 viewModel.turnOffAlarm(requireContext(), alarm.id)
             }
         }
@@ -120,6 +121,7 @@ class AlarmListFragment : Fragment() {
             viewModel.newAlarmId.collect {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it))
                     .commit()
             }

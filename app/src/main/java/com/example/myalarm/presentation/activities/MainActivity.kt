@@ -31,8 +31,7 @@ class MainActivity : AppCompatActivity() {
         val fragment = AlarmListFragment()
         supportFragmentManager.beginTransaction().replace(
             R.id.main_container, fragment
-        ).setReorderingAllowed(true)
-            .commit()
+        ).commit()
     }
 
     private fun isDialogFirstShow() {

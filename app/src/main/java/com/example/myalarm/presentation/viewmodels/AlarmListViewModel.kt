@@ -28,9 +28,9 @@ class AlarmListViewModel @Inject constructor(
     val alarmList = getAlarmListUseCase.invoke()
     val newAlarmId = MutableSharedFlow<Int>()
 
-    fun removeAlarm(alarm: Alarm) {
+    fun removeAlarm(alarmId: Int) {
         viewModelScope.launch {
-            removeAlarmUseCase.invoke(alarm)
+            removeAlarmUseCase.invoke(alarmId)
         }
     }
 
