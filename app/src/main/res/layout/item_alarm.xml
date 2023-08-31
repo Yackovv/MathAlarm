@@ -18,11 +18,11 @@
             android:id="@+id/tv_time_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:textColor="@color/for_number_color"
-            android:textSize="38sp"
+            android:textColor="@color/white_color"
+            android:textSize="32sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,13 +35,13 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_time_item"
             app:layout_constraintEnd_toStartOf="@+id/tv_tuesday"
             app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@+id/tv_time_item"
             app:layout_constraintTop_toTopOf="@+id/tv_time_item" />
 
         <TextView
             android:id="@+id/tv_tuesday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/tuesday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_monday"
             app:layout_constraintEnd_toStartOf="@+id/tv_wednesday"
@@ -52,7 +52,6 @@
         <TextView
             android:id="@+id/tv_wednesday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/wednesday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_tuesday"
             app:layout_constraintEnd_toStartOf="@+id/tv_thursday"
@@ -63,7 +62,6 @@
         <TextView
             android:id="@+id/tv_thursday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/thursday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_wednesday"
             app:layout_constraintEnd_toStartOf="@+id/tv_friday"
@@ -74,7 +72,6 @@
         <TextView
             android:id="@+id/tv_friday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/friday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_thursday"
             app:layout_constraintEnd_toStartOf="@+id/tv_saturday"
@@ -85,7 +82,6 @@
         <TextView
             android:id="@+id/tv_saturday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/saturday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_friday"
             app:layout_constraintEnd_toStartOf="@+id/tv_sunday"
@@ -96,7 +92,6 @@
         <TextView
             android:id="@+id/tv_sunday"
             style="@style/DaysOfWeekAlarmItem"
-            android:layout_marginStart="7dp"
             android:text="@string/sunday"
             app:layout_constraintBottom_toBottomOf="@+id/tv_saturday"
             app:layout_constraintEnd_toStartOf="@+id/alarm_switch"

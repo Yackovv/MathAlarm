@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.example.myalarm.R
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.activities.AlarmActivity
 import com.example.myalarm.services.AlarmWorker
 
@@ -23,7 +22,6 @@ class AlarmReceiver : BroadcastReceiver() {
     private var alarmId = UNDEFINED_ID
 
     override fun onReceive(context: Context, intent: Intent) {
-        logg("onReceive")
         parseIntent(intent)
 
         val notificationManager =
@@ -57,8 +55,11 @@ class AlarmReceiver : BroadcastReceiver() {
         createNotificationChannel(notificationManager)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setContentText(context.getString(R.string.notification_text))
+            .setContentTitle(context.getString(R.string.app_name))
             .setFullScreenIntent(getPendingIntent(context), true)
+            .setOngoing(true)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
@@ -73,7 +74,6 @@ class AlarmReceiver : BroadcastReceiver() {
             )
             notificationManager.createNotificationChannel(notificationChannel)
         }
-
     }
 
     private fun getPendingIntent(context: Context): PendingIntent {

@@ -9,10 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.domain.domain.enteties.Level
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentChoiceLevelBinding
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.viewmodels.AlarmSettingViewModel
 import com.example.myalarm.presentation.viewmodels.ViewModelFactory
@@ -30,7 +29,7 @@ class AlarmSelectLevelFragment : Fragment() {
     private val viewModel by lazy {
         ViewModelProvider(this, factory)[AlarmSettingViewModel::class.java]
     }
-    private var selectedLevel = Level.EASY
+    private lateinit var selectedLevel: Level
     private var alarmId = UNDEFINED_ID
     private val colorBlue by lazy {
         ContextCompat.getColor(requireContext(), R.color.blue_color)
@@ -62,9 +61,11 @@ class AlarmSelectLevelFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getAlarm(alarmId)
-
         setupClickListeners()
+        flowCollects()
+    }
 
+    private fun flowCollects() {
         lifecycleScope.launch {
             viewModel.questionFlow.collect {
                 bind.tvExample.text = it.example
@@ -76,6 +77,7 @@ class AlarmSelectLevelFragment : Fragment() {
                 bind.seekBar.progress = it.countQuestion
                 dropAllColors()
                 setupColorSelectedLevel(it.level)
+                selectedLevel = it.level
                 viewModel.generateQuestion(it.level)
             }
         }
@@ -97,7 +99,6 @@ class AlarmSelectLevelFragment : Fragment() {
 
         bind.ivSave.setOnClickListener {
             val countQuestion = bind.seekBar.progress
-            logg("alarmId = $alarmId, level = $selectedLevel, count question = $countQuestion")
             viewModel.setupLevelAndCountOfQuestion(selectedLevel, countQuestion)
             closeFragment()
         }

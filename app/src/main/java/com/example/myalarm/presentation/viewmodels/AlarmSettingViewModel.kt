@@ -2,13 +2,12 @@ package com.example.myalarm.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.domain.enteties.Alarm
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.usecases.EditAlarmUseCase
-import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
-import com.example.myalarm.domain.usecases.GetAlarmUseCase
-import com.example.myalarm.logg
+import com.example.domain.domain.enteties.Alarm
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.usecases.EditAlarmUseCase
+import com.example.domain.domain.usecases.GenerateQuestionUseCase
+import com.example.domain.domain.usecases.GetAlarmUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class AlarmSettingViewModel @Inject constructor(
     private val editAlarmUseCase: EditAlarmUseCase,
     private val generateQuestionUseCase: GenerateQuestionUseCase,
-    private val getAlarmUseCase: GetAlarmUseCase
+    private val getAlarmUseCase: GetAlarmUseCase,
 ) : ViewModel() {
 
     private lateinit var newAlarm: Alarm
@@ -44,8 +43,6 @@ class AlarmSettingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Unconfined) {
             val changedAlarm = newAlarm.copy(level = level, countQuestion = countQuestion)
             editAlarmUseCase.invoke(changedAlarm)
-            logg("From AlarmSettingViewModel")
-            logg("alarmId = ${changedAlarm.id}, level = $level, count question = $countQuestion")
         }
     }
 

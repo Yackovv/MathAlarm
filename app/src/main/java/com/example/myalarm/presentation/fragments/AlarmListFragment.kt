@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myalarm.R
 import com.example.myalarm.databinding.FragmentAlarmListBinding
-import com.example.myalarm.logg
 import com.example.myalarm.presentation.AlarmApplication
 import com.example.myalarm.presentation.AlarmListAdapter
 import com.example.myalarm.presentation.viewmodels.AlarmListViewModel
@@ -28,8 +30,9 @@ class AlarmListFragment : Fragment() {
     private val alarmListAdapter by lazy {
         AlarmListAdapter()
     }
+
     @Inject
-    lateinit var factory : ViewModelFactory
+    lateinit var factory: ViewModelFactory
 
     private val viewModel by lazy {
         ViewModelProvider(this, factory)[AlarmListViewModel::class.java]
@@ -57,26 +60,44 @@ class AlarmListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind.rvAlarmList.adapter = alarmListAdapter
+        bind.rvAlarmList.itemAnimator = null
+        flowCollects()
+        setupClickListeners()
+        setupSwipeListener()
+    }
 
-        lifecycleScope.launch {
-            viewModel.alarmList.collect {
-                alarmListAdapter.submitList(it)
+    private fun setupSwipeListener() {
+        val callback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val alarm = alarmListAdapter.currentList[viewHolder.adapterPosition]
+                viewModel.removeAlarm(alarm.id)
+                viewModel.turnOffAlarm(requireContext(), alarm.id)
             }
         }
+        val a = ItemTouchHelper(callback)
+        a.attachToRecyclerView(bind.rvAlarmList)
+    }
 
-        job = lifecycleScope.launch {
-            viewModel.newAlarmId.collect {
-                logg("AlarmListFragment call collect $it")
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it))
-                    .commit()
-            }
+    private fun setupClickListeners() {
+        alarmListAdapter.onClickListener = {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it.id))
+                .commit()
         }
 
-        alarmListAdapter.onLongClickListener = {
-            viewModel.removeAlarm(it)
-            viewModel.turnOffAlarm(requireContext(), it.id)
+        bind.ivAddAlarm.setOnClickListener {
+            viewModel.addAlarm()
         }
 
         alarmListAdapter.onSwitchCompatListener = { alarm, isEnabled ->
@@ -87,16 +108,23 @@ class AlarmListFragment : Fragment() {
                 viewModel.turnOffAlarm(requireContext(), alarm.id)
             }
         }
+    }
 
-        alarmListAdapter.onClickListener = {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it.id))
-                .commit()
+    private fun flowCollects() {
+        lifecycleScope.launch {
+            viewModel.alarmList.collect {
+                alarmListAdapter.submitList(it)
+            }
         }
 
-        bind.ivAddAlarm.setOnClickListener {
-            viewModel.addAlarm()
+        job = lifecycleScope.launch {
+            viewModel.newAlarmId.collect {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.main_container, AlarmSettingFragment.newInstanceAddAlarm(it))
+                    .commit()
+            }
         }
     }
 

@@ -61,7 +61,6 @@ class AlarmActivity : AppCompatActivity() {
         parseIntent()
         setupMaxVolume()
         viewModel.getAlarm(alarmId)
-        viewModel.generateQuestion()
         cancelNotification()
         flowCollects()
         setOnClickListeners()
@@ -140,8 +139,7 @@ class AlarmActivity : AppCompatActivity() {
                     ringtone.stop()
                     vibrator.cancel()
                     setupAlarmOnNextDay()
-                    finish()
-                    startActivity(MainActivity.newIntentMainActivity(this@AlarmActivity))
+                    finishAndRemoveTask()
                 }
             }
         }
@@ -232,6 +230,7 @@ class AlarmActivity : AppCompatActivity() {
             return Intent(context, AlarmActivity::class.java).apply {
                 putExtra(EXTRA_ALARM_ID, alarmId)
                 putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+                addFlags(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS)
             }
         }
     }

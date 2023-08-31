@@ -2,14 +2,13 @@ package com.example.myalarm.presentation.viewmodels
 
 import android.net.Uri
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myalarm.domain.enteties.Level
-import com.example.myalarm.domain.enteties.Question
-import com.example.myalarm.domain.usecases.GenerateQuestionUseCase
-import com.example.myalarm.domain.usecases.GetAlarmUseCase
+import com.example.domain.domain.enteties.Level
+import com.example.domain.domain.enteties.Question
+import com.example.domain.domain.usecases.GenerateQuestionUseCase
+import com.example.domain.domain.usecases.GetAlarmUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,23 +49,24 @@ class AlarmViewModel @Inject constructor(
 
     fun getAlarm(alarmId: Int) {
         viewModelScope.launch {
-            Log.d("11111", "Alarm ID: $alarmId")
             val alarm = getAlarmUseCase.invoke(alarmId)
             level = alarm.level
             numberQuestion = alarm.countQuestion
             countOfQuestionFlow.emit(numberQuestion)
             ringtoneUriFlow.emit(alarm.ringtoneUriString.toUri())
             vibrationFlow.emit(alarm.vibration)
+            generateQuestion()
         }
     }
 
     fun generateQuestion() {
         viewModelScope.launch {
-            val question = generateQuestionUseCase.invoke(level)
-            rightAnswer = question.answer
-            questionFlow.emit(question)
-            Log.d("11111", question.example)
-            countOfQuestionFlow.emit(--numberQuestion)
+            if (isNumberQuestionZero()) {
+                val question = generateQuestionUseCase.invoke(level)
+                rightAnswer = question.answer
+                questionFlow.emit(question)
+            }
+            timer.cancel()
         }
     }
 
@@ -74,15 +74,26 @@ class AlarmViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val answer = userAnswer.trim().toInt()
-                isRightAnswerFlow.emit(answer == rightAnswer)
+                if (answer == rightAnswer) {
+                    isRightAnswerFlow.emit(true)
+                    countOfQuestionFlow.emit(--numberQuestion)
+                } else {
+                    isRightAnswerFlow.emit(false)
+                }
             } catch (_: NumberFormatException) {
             }
         }
     }
 
     fun startTimer() {
-        timer.cancel()
-        timer.start()
+        if (isNumberQuestionZero()) {
+            timer.cancel()
+            timer.start()
+        }
+    }
+
+    private fun isNumberQuestionZero(): Boolean {
+        return numberQuestion > 0
     }
 
     private fun temp(mills: Long) = (mills / 1000).toString()
