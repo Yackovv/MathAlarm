@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyAlarm</string>
+    <string name="app_name">MathAlarm</string>
     <string name="add_alarm">Добавить будильник</string>
     <string name="monday">Пн</string>
     <string name="tuesday">Вт</string>

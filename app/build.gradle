@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.myalarm'
+    namespace 'com.example.mathalarm'
     compileSdk 33
 
     buildFeatures{
